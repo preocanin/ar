@@ -2,21 +2,22 @@
 
 %%
 
-'|-'                return '|-';
-'T'                 return 'TRUE';
-'F'                 return 'FALSE';
+"|-"                return '|-';
+"T"                 return 'TRUE';
+"F"                 return 'FALSE';
 [a-z][a-z0-9]*\b    return 'ATOM';
-','                 return ',';
-'~'                 return '~';
-'&'                 return '&';
-'|'                 return '|';
-'=>'                return '=>';
-'<=>'               return '<=>';
-'('                 return '(';
-')'                 return ')';
+","                 return ',';
+"~"                 return '~';
+"&"                 return '&';
+"|"                 return '|';
+"=>"                return '=>';
+"<=>"               return '<=>';
+"("                 return '(';
+")"                 return ')';
 \n                  return 'NL';
 \s+                 return /**/
 .                   return 'INVALID';
+<<EOF>>             return 'EOF'
 
 /lex
 
@@ -35,13 +36,29 @@
 
 %%
 
-theorem     : assumptions '|-' formula 'NL'
+theorem     : assumptions '|-' formula 'EOF'
               { 
                   var thm = new Theorem();
                   thm.assumptions = $1;
                   thm.lemma = $3;
 
-                  console.log(String(thm)); 
+                  return thm;
+              }
+            | formula 'EOF'
+              { 
+                  var thm = new Theorem();
+                  thm.assumptions = [];
+                  thm.lemma = $1;
+
+                  return thm;
+              }
+
+            | assumptions '|-' formula 'NL'
+              { 
+                  var thm = new Theorem();
+                  thm.assumptions = $1;
+                  thm.lemma = $3;
+
                   return thm;
               }
             | formula 'NL'
@@ -50,9 +67,10 @@ theorem     : assumptions '|-' formula 'NL'
                   thm.assumptions = [];
                   thm.lemma = $1;
 
-                  console.log(String(thm)); 
                   return thm;
               }
+            | 'EOF'
+              { return undefined; }
             | 'NL'
               { return undefined; }
             ;
