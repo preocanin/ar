@@ -4,10 +4,15 @@
   "description": "Proof assistant for natural deduction",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "jasmine"
   },
   "license": "MIT",
   "dependencies": {
-    "jison": "^0.4.17"
+    "jison": "^0.4.17",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "jasmine": "^2.6.0"
   }
 }

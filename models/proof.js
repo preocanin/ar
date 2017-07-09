@@ -1,4 +1,5 @@
 'use strict'
+const _ = require('lodash');
 
 class Proof {
     /* --- Proof ---
@@ -15,7 +16,7 @@ class Proof {
 
     get states() { return this._states; }
 
-    get currentGoals() { return this._states[this._states.length-1]; }
+    get currentGoals() { return _.last(this._states); }
 
     back(num_steps = 1) {
         for(let i = 0; i < num_steps && this._states.length > 0; i++)
