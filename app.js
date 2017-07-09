@@ -10,22 +10,28 @@ var Proof = require('./models/proof');
 var bnf = fs.readFileSync('./parsers/theorem.jison', 'utf8');
 var theorem_parser= new jison.Parser(bnf);
 
-var thm = theorem_parser.parse("p, q |- p | q");
-console.log(String(thm));
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
+mainloop();
 
+function mainloop() {
+  rl.question('What\'s your theorem? ', (answer) => {
+    const thm = theorem_parser.parse(answer);
+    console.log(thm.toString());
+    rl.pause();
+  commandloop();
+  });
+  // mainloop();
+}
 
-//// IO example
-// const rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout
-// });
-
-// rl.question('What do you think of Node.js? ', (answer) => {
-//   // TODO: Log the answer in a database
-//   console.log(`Thank you for your valuable feedback: ${answer}`);
-
-//   rl.close();
-// });
-
-var proof_thm = new Proof(thm);
+function commandloop() {
+  rl.question("apply rule: ", function (command_string) {
+    console.log(command_string);
+    rl.pause();
+    commandloop();
+  });
+}
+// var proof_thm = new Proof(thm);

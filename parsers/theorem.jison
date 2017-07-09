@@ -5,7 +5,7 @@
 "|-"                return '|-';
 "T"                 return 'TRUE';
 "F"                 return 'FALSE';
-[a-z][a-z0-9]*\b    return 'ATOM';
+[a-zA-Z][a-z0-9]*\b    return 'ATOM';
 ","                 return ',';
 "~"                 return '~';
 "&"                 return '&';
