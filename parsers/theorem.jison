@@ -2,22 +2,22 @@
 
 %%
 
-"|-"                return '|-';
-"T"                 return 'TRUE';
-"F"                 return 'FALSE';
-[a-zA-Z][a-z0-9]*\b    return 'ATOM';
-","                 return ',';
-"~"                 return '~';
-"&"                 return '&';
-"|"                 return '|';
-"=>"                return '=>';
-"<=>"               return '<=>';
-"("                 return '(';
-")"                 return ')';
-\n                  return 'NL';
-\s+                 return /**/
-.                   return 'INVALID';
-<<EOF>>             return 'EOF'
+"|-"                    return '|-';
+"T"                     return 'TRUE';
+"F"                     return 'FALSE';
+[a-zA-Z][a-z0-9]*\b     return 'ATOM';
+","                     return ',';
+"~"                     return '~';
+"&"                     return '&';
+"|"                     return '|';
+"=>"                    return '=>';
+"<=>"                   return '<=>';
+"("                     return '(';
+")"                     return ')';
+\n                      return 'NL';
+<<EOF>>                 return 'EOF';
+\s+                     /* ignore whitespaces */
+.                       return 'INVALID';
 
 /lex
 
@@ -36,7 +36,7 @@
 
 %%
 
-theorem     : assumptions '|-' formula 'EOF'
+theorem     : assumptions '|-' formula EOF
               { 
                   var thm = new Theorem();
                   thm.assumptions = $1;
@@ -44,7 +44,7 @@ theorem     : assumptions '|-' formula 'EOF'
 
                   return thm;
               }
-            | formula 'EOF'
+            | formula EOF
               { 
                   var thm = new Theorem();
                   thm.assumptions = [];
@@ -53,7 +53,7 @@ theorem     : assumptions '|-' formula 'EOF'
                   return thm;
               }
 
-            | assumptions '|-' formula 'NL'
+            | assumptions '|-' formula NL
               { 
                   var thm = new Theorem();
                   thm.assumptions = $1;
@@ -61,7 +61,7 @@ theorem     : assumptions '|-' formula 'EOF'
 
                   return thm;
               }
-            | formula 'NL'
+            | formula NL
               { 
                   var thm = new Theorem();
                   thm.assumptions = [];
@@ -69,9 +69,9 @@ theorem     : assumptions '|-' formula 'EOF'
 
                   return thm;
               }
-            | 'EOF'
+            | EOF
               { return undefined; }
-            | 'NL'
+            | NL
               { return undefined; }
             ;
 
@@ -93,10 +93,16 @@ formula     : formula '&' formula
               { $$ = new Formula.Not($2); }
             | '(' formula ')'
               { $$ = $2; }
-            | 'TRUE'
+            | TRUE
               { $$ = new Formula.Constant(true); }
-            | 'FALSE'
+            | FALSE
               { $$ = new Formula.Constant(false); }
-            | 'ATOM'
+            | ATOM
               { $$ = new Formula.Atom(yytext); }
+            ;
+
+end         : NL 
+              {}
+            | EOF 
+              {}
             ;
