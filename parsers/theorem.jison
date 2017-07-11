@@ -36,7 +36,7 @@
 
 %%
 
-theorem     : assumptions '|-' formula EOF
+theorem     : assumptions '|-' formula end 
               { 
                   var thm = new Theorem();
                   thm.assumptions = $1;
@@ -44,7 +44,7 @@ theorem     : assumptions '|-' formula EOF
 
                   return thm;
               }
-            | formula EOF
+            | formula end 
               { 
                   var thm = new Theorem();
                   thm.assumptions = [];
@@ -52,26 +52,7 @@ theorem     : assumptions '|-' formula EOF
 
                   return thm;
               }
-
-            | assumptions '|-' formula NL
-              { 
-                  var thm = new Theorem();
-                  thm.assumptions = $1;
-                  thm.lemma = $3;
-
-                  return thm;
-              }
-            | formula NL
-              { 
-                  var thm = new Theorem();
-                  thm.assumptions = [];
-                  thm.lemma = $1;
-
-                  return thm;
-              }
-            | EOF
-              { return undefined; }
-            | NL
+            | end 
               { return undefined; }
             ;
 
@@ -102,7 +83,5 @@ formula     : formula '&' formula
             ;
 
 end         : NL 
-              {}
             | EOF 
-              {}
             ;

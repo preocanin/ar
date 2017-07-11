@@ -1,5 +1,7 @@
 'use strict'
 
+const _ = require('lodash');
+
 class Theorem {
     /* --- Theorem ---
      * Each theorem is represented with list of assumptions(left side) and a 
@@ -24,6 +26,8 @@ class Theorem {
             this._lemma = lemma.clone();
     }
 
+    get lemma() { return this._lemma; }
+
     set assumptions(assumptions) {
         this._assumption_list = [];
         if(assumptions !== undefined)
@@ -34,10 +38,28 @@ class Theorem {
             };
     }
 
+    getAssumption(type, num = 1) {
+        return _.nth(this._assumption_dict[type], num-1);
+    }
+
     addAssumption(assumption) {
         if(assumption !== undefined) {
             this._assumption_list.push(assumption);
             this._assumption_dict[assumption.type].push(assumption);
+        }
+    }
+
+    removeAssumption(assumption) {
+        if(assumption !== undefined) {
+           this._assumption_list = 
+                _.remove(this._assumption_list, function(f) {
+                    return assumption.notEqualTo(f); 
+                });
+
+           this._assumption_dict[assumption.type] = 
+                _.remove(this._assumption_dict[assumption.type], function(f) {
+                    return assumption.notEqualTo(f); 
+                });
         }
     }
 
@@ -50,6 +72,7 @@ class Theorem {
             new_assumptions.push(assumption);
         });
         new_thm.assumptions = new_assumptions;
+        return new_thm;
     }
 
     toString() {

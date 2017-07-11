@@ -10,7 +10,9 @@
 [rR][uU][lL][eE]\b      return 'RULE';
 [eE][rR][uU][lL][eE]\b  return 'ERULE';
 "impI"                  return 'IMPI';
+"notI"                  return 'NOTI';
 "impE"                  return 'IMPE';
+"notE"                  return 'NOTE';
 \n                      return 'NL';
 <<EOF>>                 return 'EOF';
 \s+                     /* ignore whitespaces */
@@ -30,13 +32,9 @@ type        : RULE rule end
               {
                   return { type: $2 };
               }
-            | RULE rule number end
-              {
-                  return { type: $2, argument: $3 };
-              }
             | ERULE erule end
               {
-                  return { type: $2, argument: 0 };
+                  return { type: $2, argument: 1 };
               }
             | ERULE erule number end
               {
@@ -44,7 +42,7 @@ type        : RULE rule end
               }
             | BACK end 
               {   
-                  return { type: "back", argument: 0 }; 
+                  return { type: "back", argument: 1 }; 
               }
             | BACK number end
               { 
@@ -65,11 +63,15 @@ type        : RULE rule end
             ;
 
 rule        : IMPI
-              { $$ = "impI"; }
+              { $$ = yytext; }
+            | NOTI
+              { $$ = yytext; }
             ;
 
 erule       : IMPE
-              { $$ = "impE"; }
+              { $$ = yytext; }
+            | NOTE
+              { $$ = yytext; }
             ;
 
 number      : NUMBER 
@@ -79,7 +81,5 @@ number      : NUMBER
             ;
 
 end         : NL
-              {}
             | EOF
-              {}
             ;

@@ -24,6 +24,10 @@ module.exports.Atom = class Atom extends Formula {
         return f.type == this.type &&
                f.lit == this.lit;
     }
+    
+    notEqualTo(f) {
+        return !this.equalTo(f);
+    }
 }
 
 module.exports.Constant = class Constant extends Formula {
@@ -43,6 +47,10 @@ module.exports.Constant = class Constant extends Formula {
     equalTo(f) {
         return f.type == this.type &&
                f.val == this.val;
+    }
+    
+    notEqualTo(f) {
+        return !this.equalTo(f);
     }
 }
 
@@ -66,6 +74,10 @@ module.exports.Not = class Not extends Formula {
         return f.type == this.type &&
                this.op.equalTo(f.op);
     }
+    
+    notEqualTo(f) {
+        return !this.equalTo(f);
+    }
 }
 
 class BinaryConnective extends Formula {
@@ -79,6 +91,10 @@ class BinaryConnective extends Formula {
         return f.type == this.type &&
                this.op1.equalTo(f.op1)  &&
                this.op2.equalTo(f.op2);
+    }
+    
+    notEqualTo(f) {
+        return !this.equalTo(f);
     }
 }
 

@@ -1,6 +1,7 @@
 'use strict'
 
 const readline = require('readline');
+const _ = require('lodash');
 
 var fs = require('fs');
 var jison = require('jison');
@@ -18,10 +19,13 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
+var proof = undefined;
+
 mainloop();
 
 function mainloop() {
   rl.question('What\'s your theorem? ', (answer) => {
+    proof = undefined;
     if(answer == "quit")
         rl.close();
     else if(answer == "help") {
@@ -29,8 +33,16 @@ function mainloop() {
         mainloop();
     }
     else {
-        const thm = theorem_parser.parse(answer);
-        console.log(String(thm));
+        if(proof === undefined) {
+            var thm = theorem_parser.parse(answer);
+            proof = new Proof(thm);
+        } 
+        
+        if(proof !== undefined) {
+            proof.impE(1);
+            console.log(String(proof));
+        }
+
         rl.pause();
         commandloop();
     }
@@ -47,8 +59,9 @@ function commandloop() {
           return;
     if(command.type == "help")
           console.log("Neki help");
-    if(command.type != "done")
+    if(command.type != "done") {
         commandloop();
+    }
     else 
         mainloop();
   });
