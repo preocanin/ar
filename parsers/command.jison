@@ -10,9 +10,15 @@
 [rR][uU][lL][eE]\b      return 'RULE';
 [eE][rR][uU][lL][eE]\b  return 'ERULE';
 "impI"                  return 'IMPI';
-"notI"                  return 'NOTI';
 "impE"                  return 'IMPE';
 "notE"                  return 'NOTE';
+"notI"                  return 'NOTI';
+"conjI"                 return 'CONJI';
+"conjE"                 return 'CONJE';
+"disjI1"                return 'DISJI1';
+"disjI2"                return 'DISJI2';
+"disjE"                 return 'DISJE';
+"ccontr"                return 'CCONTR';
 \n                      return 'NL';
 <<EOF>>                 return 'EOF';
 \s+                     /* ignore whitespaces */
@@ -66,11 +72,23 @@ rule        : IMPI
               { $$ = yytext; }
             | NOTI
               { $$ = yytext; }
+            | CONJI
+              { $$ = yytext; }
+            | DISJI1
+              { $$ = yytext; }
+            | DISJI2
+              { $$ = yytext; }
+            | CCONTR
+              { $$ = yytext; }
             ;
 
 erule       : IMPE
               { $$ = yytext; }
             | NOTE
+              { $$ = yytext; }
+            | CONJE
+              { $$ = yytext; }
+            | DISJE
               { $$ = yytext; }
             ;
 

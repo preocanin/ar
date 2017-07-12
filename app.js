@@ -39,7 +39,7 @@ function mainloop() {
         } 
         
         if(proof !== undefined) {
-            proof.impE(1);
+            proof.ccontr();
             console.log(String(proof));
         }
 

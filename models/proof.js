@@ -1,5 +1,7 @@
 'use strict'
+
 const _ = require('lodash');
+const Formula = require('./formula');
 
 class Proof {
     /* --- Proof ---
@@ -26,6 +28,40 @@ class Proof {
         _.dropRight(this._states,num_steps);
     }
 
+    notI() {
+        if(this.currentThm.lemma.type == "not") {
+            var goal = this.currentThm.clone();
+
+            var new_assumption = this.currentThm.lemma.op;
+
+            goal.lemma = new Formula.Constant(false);
+            goal.addAssumption(new_assumption);
+            
+            this._states.push(_.drop(this.currentGoals)); 
+            this.currentGoals.push(goal);
+            
+            return true;
+        }
+        return false;
+    }
+
+    conjI() {
+        if(this.currentThm.lemma.type == "and") {
+            var goal_1= this.currentThm.clone();
+            var goal_2 = this.currentThm.clone();
+
+            goal_1.lemma = this.currentThm.lemma.op1;
+            goal_2.lemma = this.currentThm.lemma.op2;
+
+            this._states.push(_.drop(this.currentGoals));
+            this.currentGoals.push(goal_1);
+            this.currentGoals.push(goal_2);
+
+            return true;
+        }
+        return false;
+    }
+
     impI() {
         if(this.currentThm.lemma.type == "imp") {
             var goal = this.currentThm.clone();
@@ -43,6 +79,53 @@ class Proof {
             return true;
         }
         return false;
+    }
+
+    disjI1() {
+        if(this.currentThm.lemma.type == "or") {
+            var goal = this.currentThm.clone();
+
+            var op1 = this.currentThm.lemma.op1;
+
+            goal.lemma = op1;
+
+            this._states.push(_.drop(this.currentGoals));
+            this.currentGoals.push(goal);
+
+            return true;
+        }
+        return false;
+    }
+
+    disjI2() {
+        if(this.currentThm.lemma.type == "or") {
+            var goal = this.currentThm.clone();
+
+            var op2 = this.currentThm.lemma.op2;
+
+            goal.lemma = op2;
+
+            this._states.push(_.drop(this.currentGoals));
+            this.currentGoals.push(goal);
+
+            return true;
+        }
+        return false;
+
+    }
+
+    ccontr() {
+        var goal = this.currentThm.clone();
+
+        var new_assumption = new Formula.Not(this.currentThm.lemma);
+
+        goal.lemma = new Formula.Constant(false);
+        goal.addAssumption(new_assumption);
+
+        this._states.push(_.drop(this.currentGoals));
+        this.currentGoals.push(goal);
+
+        return true;
     }
 
     // [ op1 => op2, assump1, assump2, ... ] |- lemma
@@ -70,6 +153,60 @@ class Proof {
         }
         return false;
 
+    }
+
+    notE(num = 1) {
+        var assumption = this.currentThm.getAssumption("not",num);
+        if(assumption !== undefined) {
+            var goal = this.currentThm.clone();
+
+            goal.removeAssumption(assumption);
+            goal.lemma = assumption.op;
+
+            this._states.push(_.drop(this.currentGoals)); 
+            this.currentGoals.push(goal);
+
+            return true;
+        }
+        return false;
+    }
+
+    conjE(num = 1) {
+        var assumption = this.currentThm.getAssumption("and",num);
+        if(assumption !== undefined) {
+            var goal = this.currentThm.clone();
+
+            goal.removeAssumption(assumption);
+            goal.addAssumption(assumption.op1);
+            goal.addAssumption(assumption.op2);
+
+            this._states.push(_.drop(this.currentGoals));
+            this.currentGoals.push(goal);
+
+            return true;
+        }
+        return false;
+    }
+
+    disjE(num = 1) {
+        var assumption = this.currentThm.getAssumption("or",num);
+        if(assumption !== undefined) {
+            var goal_1 = this.currentThm.clone();
+            var goal_2 = this.currentThm.clone();
+
+            goal_1.removeAssumption(assumption);
+            goal_1.addAssumption(assumption.op1);
+
+            goal_2.removeAssumption(assumption);
+            goal_2.addAssumption(assumption.op2);
+
+            this._states.push(_.drop(this.currentGoals));
+            this.currentGoals.push(goal_1);
+            this.currentGoals.push(goal_2);
+
+            return true;
+        }
+        return false;
     }
 
     toString() {
