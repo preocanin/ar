@@ -42,11 +42,21 @@ class Theorem {
         return _.nth(this._assumption_dict[type], num-1);
     }
 
+    getAllAssumptions(type) {
+        return this._assumption_dict[type];
+    }
+
     addAssumption(assumption) {
         if(assumption !== undefined) {
             this._assumption_list.push(assumption);
             this._assumption_dict[assumption.type].push(assumption);
         }
+    }
+
+    isAssumption(assumption) {
+       return _.find(this._assumption_list, function(_assump) {
+            return _assump.equalTo(assumption) !== undefined;
+       });
     }
 
     removeAssumption(assumption) {
@@ -62,6 +72,8 @@ class Theorem {
                 });
         }
     }
+
+
 
     clone() {
         var new_thm = new this.constructor();

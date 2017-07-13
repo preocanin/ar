@@ -9,8 +9,10 @@
 [qQ][uU][iI][tT]\b      return 'QUIT';
 [rR][uU][lL][eE]\b      return 'RULE';
 [eE][rR][uU][lL][eE]\b  return 'ERULE';
+"assumption"            return 'ASSUMPTION';
 "impI"                  return 'IMPI';
 "impE"                  return 'IMPE';
+"mp"                    return 'MP';
 "notE"                  return 'NOTE';
 "notI"                  return 'NOTI';
 "conjI"                 return 'CONJI';
@@ -34,7 +36,11 @@
 
 %%
 
-type        : RULE rule end
+type        : ASSUMPTION end
+              {
+                return { type: "assumption" };
+              }
+            | RULE rule end
               {
                   return { type: $2 };
               }
@@ -83,6 +89,8 @@ rule        : IMPI
             ;
 
 erule       : IMPE
+              { $$ = yytext; }
+            | MP 
               { $$ = yytext; }
             | NOTE
               { $$ = yytext; }

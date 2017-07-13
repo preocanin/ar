@@ -28,6 +28,15 @@ class Proof {
         _.dropRight(this._states,num_steps);
     }
 
+    assumption() {
+        var current_goal = this.currentThm;
+        if(current_goal.isAssumption(current_goal.lemma)) {
+            this._states.push(_.drop(this.currentGoals));
+            return true;
+        }
+        return false;
+    }
+
     notI() {
         if(this.currentThm.lemma.type == "not") {
             var goal = this.currentThm.clone();
@@ -152,7 +161,25 @@ class Proof {
             return true;
         }
         return false;
+    }
 
+    mp(num = 1) {
+        var imps = this.currentThm.getAllAssumptions("imp");
+        if(imps.length > 0) {
+            var mp_imp = imps[num-1];
+            if(this.currentThm.lemma.equalTo(mp_imp.op2)) {
+                var goal = this.currentThm.clone();
+
+                goal.removeAssumption(mp_imp);
+                goal.lemma = mp_imp.op2;
+
+                this._states.push(_.drop(this.currentGoals));
+                this.currentGoals.push(goal);
+
+                return true;
+            } 
+        }
+        return false;
     }
 
     notE(num = 1) {
