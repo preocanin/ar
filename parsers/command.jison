@@ -21,6 +21,7 @@
 "disjI2"                return 'DISJI2';
 "disjE"                 return 'DISJE';
 "ccontr"                return 'CCONTR';
+"classical"             return 'CLASSICAL';
 \n                      return 'NL';
 <<EOF>>                 return 'EOF';
 \s+                     /* ignore whitespaces */
@@ -85,6 +86,8 @@ rule        : IMPI
             | DISJI2
               { $$ = yytext; }
             | CCONTR
+              { $$ = yytext; }
+            | CLASSICAL
               { $$ = yytext; }
             ;
 

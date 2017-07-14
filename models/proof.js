@@ -137,6 +137,21 @@ class Proof {
         return true;
     }
 
+    classical() {
+        if(this.currentThm.lemma !== undefined) {
+            var goal = this.currentThm.clone();
+            var new_assumption = new Formula.Not(goal.lemma);
+
+            goal.addAssumption(new_assumption);
+
+            this._states.push(_.drop(this.currentGoals));
+            this.currentGoals.push(goal);
+
+            return true;
+        } 
+        return false;
+    }
+
     // [ op1 => op2, assump1, assump2, ... ] |- lemma
     // we get 2 subgoals:
     // 1. [assump1, assump2, ...] |- op1

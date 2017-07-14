@@ -39,7 +39,7 @@ function mainloop() {
         } 
         
         if(proof !== undefined) {
-            proof.assumption();
+            proof.classical();
             console.log(String(proof));
         }
 
