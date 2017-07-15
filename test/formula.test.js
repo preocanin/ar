@@ -9,6 +9,7 @@ const And = formula.And;
 const Or = formula.Or;
 const Imp = formula.Imp;
 const Iff = formula.Iff;
+const Constant= formula.Constant;
 
 describe("Formula", function() {
 
@@ -47,6 +48,95 @@ describe("Formula", function() {
       it("Should make a new formula which is equalTo cloned formula but points to a different memory location", function() {
         expect(p.equalTo(q)).toBe(true);
         expect(p === q).toBe(false);
+      })
+    });
+  });
+
+
+  describe("Not", function() {
+    describe("toString() method", function() {
+      const p = new Atom('P');
+      const q = new Atom('Q');
+
+      const notPandQ = new Not(new And(p, q));
+      const notP = new Not(p);
+      it("Should return correctly parsed string", function() {
+        expect(notP.toString()).toBe("~P");
+        expect(notPandQ.toString()).toBe("(~ ( P & Q ) )");
+      });
+    });
+
+    describe("equalTo() method", function() {
+      const p = new Atom('P');
+      const notP = new Not(p);
+      const anotherNotP = new Not(new Atom('P'));
+      const q = new Atom('Q');
+      const notQ = new Not(q);
+      const anotherFormula = new Not(new And(p, q));
+
+      it("Should return true if the type of formulas is the same and literal is also the same", function() {
+        expect(notP.equalTo(anotherNotP)).toBe(true);
+      });
+
+      it("Should return false if the type of formulas is not the same", function() {
+        expect(notP.equalTo(anotherFormula)).toBe(false);
+        expect(notQ.equalTo(anotherFormula)).toBe(false);
+      });
+
+      it("Should return false if the literal of formulas is not the same", function() {
+        expect(notP.equalTo(notQ)).toBe(false);
+      });
+    });
+
+    describe("clone() method", function() {
+      const notP = new Not(new Atom('P'));
+      const notQ = notP.clone();
+
+      it("Should make a new formula which is equalTo cloned formula but points to a different memory location", function() {
+        expect(notP.equalTo(notQ)).toBe(true);
+        expect(notP === notQ).toBe(false);
+      })
+    });
+  });
+
+  describe("Constant", function() {
+    describe("toString() method", function() {
+      const T = new Constant(true);
+      const N = new Constant(false);
+
+      it("Should return correctly parsed string", function() {
+        expect(T.toString()).toBe("true");
+        expect(N.toString()).toBe("false");
+      });
+    });
+
+    describe("equalTo() method", function() {
+      const T = new Constant(true);
+      const p = new Atom('P');
+      const alsoT = new Constant(true);
+      const N = new Constant(false);
+
+      it("Should return true if the type of formulas is the same and literal is also the same", function() {
+        expect(T.equalTo(alsoT)).toBe(true);
+      });
+
+      it("Should return false if the type of formulas is not the same", function() {
+        expect(T.equalTo(p)).toBe(false);
+        expect(N.equalTo(p)).toBe(false);
+      });
+
+      it("Should return false if the value of constants is not the same", function() {
+        expect(N.equalTo(T)).toBe(false);
+      });
+    });
+
+    describe("clone() method", function() {
+      const T = new Constant(true);
+      const clonedT = T.clone();
+
+      it("Should make a new formula which is equalTo cloned formula but points to a different memory location", function() {
+        expect(T.equalTo(clonedT)).toBe(true);
+        expect(T === clonedT).toBe(false);
       })
     });
   });
