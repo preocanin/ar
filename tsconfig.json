@@ -1,0 +1,17 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+        "module": "system",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outFile": "tsc.js",
+        "sourceMap": true
+    },
+    "include": [
+        "models/*"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
