@@ -6,7 +6,7 @@ class Formula {
     }
 }
 
-module.exports.Atom = class Atom extends Formula {
+class Atom extends Formula {
     constructor(lit) {
         super("atom");
         this.lit = lit;
@@ -30,7 +30,7 @@ module.exports.Atom = class Atom extends Formula {
     }
 }
 
-module.exports.Constant = class Constant extends Formula {
+class Constant extends Formula {
     constructor(val) {
         super("const");
         this.val = val;
@@ -54,7 +54,7 @@ module.exports.Constant = class Constant extends Formula {
     }
 }
 
-module.exports.Not = class Not extends Formula {
+class Not extends Formula {
     constructor(op) {
         super("not");
         this.op = op;
@@ -98,7 +98,7 @@ class BinaryConnective extends Formula {
     }
 }
 
-module.exports.And = class And extends BinaryConnective {
+class And extends BinaryConnective {
     constructor(op1,op2) {
         super("and",op1,op2);
     }
@@ -112,7 +112,7 @@ module.exports.And = class And extends BinaryConnective {
     }
 }
 
-module.exports.Or = class Or extends BinaryConnective {
+class Or extends BinaryConnective {
     constructor(op1,op2) {
         super("or",op1,op2);
     }
@@ -126,7 +126,7 @@ module.exports.Or = class Or extends BinaryConnective {
     }
 }
 
-module.exports.Imp = class Imp extends BinaryConnective {
+class Imp extends BinaryConnective {
     constructor(op1,op2) {
         super("imp",op1,op2);
     }
@@ -140,7 +140,7 @@ module.exports.Imp = class Imp extends BinaryConnective {
     }
 }
 
-module.exports.Iff = class Iff extends BinaryConnective {
+class Iff extends BinaryConnective {
     constructor(op1,op2) {
         super("iff",op1,op2);
     }
@@ -152,5 +152,15 @@ module.exports.Iff = class Iff extends BinaryConnective {
     toString() {
         return "( " + String(this.op1) + " <=> " + String(this.op2) + " )";
     }
+}
+
+module.exports = {
+    Iff: Iff,
+    Imp: Imp,
+    Or: Or,
+    And: And,
+    Not: Not,
+    Constant: Constant,
+    Atom: Atom
 }
 
