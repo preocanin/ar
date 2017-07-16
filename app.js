@@ -15,6 +15,8 @@ var rl = readline.createInterface({
 var proof = undefined;
 mainloop();
 function mainloop() {
+    var parsed = theorem_parser.parse("P & Q |- P");
+    console.log(parsed);
     rl.question('What\'s your theorem? ', function (answer) {
         proof = undefined;
         if (answer == "quit")

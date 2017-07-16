@@ -1,6 +1,7 @@
 'use strict'
 
 import * as readline from 'readline';
+import * as readlineSync from 'readline-sync';
 import * as _ from "lodash";
 import * as fs from 'fs';
 import { Proof } from './models/proof';
@@ -24,7 +25,11 @@ var proof = undefined;
 mainloop();
 
 function mainloop() {
-  rl.question('What\'s your theorem? ', (answer) => {
+    // const answer = readlineSync.question('Sync');
+    const parsed = theorem_parser.parse("P & Q |- P");
+    console.log(parsed);
+
+rl.question('What\'s your theorem? ', (answer) => {
     proof = undefined;
     if(answer == "quit")
         rl.close();
