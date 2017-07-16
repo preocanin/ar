@@ -25,11 +25,8 @@ var proof = undefined;
 mainloop();
 
 function mainloop() {
-    // const answer = readlineSync.question('Sync');
-    const parsed = theorem_parser.parse("P & Q |- P");
-    console.log(parsed);
 
-rl.question('What\'s your theorem? ', (answer) => {
+rl.question('What\'s your theorem, girl?', (answer) => {
     proof = undefined;
     if(answer == "quit")
         rl.close();

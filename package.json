@@ -9,13 +9,14 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@types/lodash": "^4.14.69",
-    "@types/readline-sync": "^1.4.2",
     "jison": "^0.4.17",
     "lodash": "^4.17.4",
     "readline-sync": "^1.4.7"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.69",
+    "@types/jasmine": "^2.5.53",
+    "@types/readline-sync": "^1.4.2",
     "@types/node": "^8.0.13",
     "jasmine": "^2.6.0"
   }

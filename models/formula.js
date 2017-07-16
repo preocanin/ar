@@ -10,16 +10,19 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Type;
-(function (Type) {
-    Type[Type["Atom"] = 0] = "Atom";
-    Type[Type["Not"] = 1] = "Not";
-    Type[Type["Constant"] = 2] = "Constant";
-    Type[Type["Iff"] = 3] = "Iff";
-    Type[Type["Imp"] = 4] = "Imp";
-    Type[Type["And"] = 5] = "And";
-    Type[Type["Or"] = 6] = "Or";
-})(Type = exports.Type || (exports.Type = {}));
+var Type = (function () {
+    function Type() {
+    }
+    Type.Atom = "atom";
+    Type.Not = "not";
+    Type.Constant = "constant";
+    Type.Iff = "iff";
+    Type.Imp = "imp";
+    Type.And = "and";
+    Type.Or = "or";
+    return Type;
+}());
+exports.Type = Type;
 var BaseFormula = (function () {
     function BaseFormula(type) {
         this.type = type;

@@ -10,12 +10,12 @@ export class Theorem {
      * lemma (right side) (assumptions |- lemma).
      */
     private _lemma: IFormula;
-    private assumptionList: IFormula[];
-    private assumptionDict: { [type: string]: IFormula[] }
+    private _assumption_list: IFormula[];
+    private _assumption_dict: { [type: string]: IFormula[] }
     
     constructor() {
-        this.assumptionList = [];
-        this.assumptionDict = {
+        this._assumption_list = [];
+        this._assumption_dict = {
             atom: [],
             constant: [],
             not: [],
@@ -35,45 +35,45 @@ export class Theorem {
     get lemma() { return this._lemma; }
 
     set assumptions(assumptions: IFormula[]) {
-        this.assumptionList = [];
+        this._assumption_list = [];
         if(assumptions !== undefined)
             for(let i = 0; i < assumptions.length ; i++) {
-                var assumption_clone = assumptions[i].clone();
-                this.assumptionDict[assumptions[i].getType()].push(assumption_clone);
-                this.assumptionList.push(assumption_clone);
+                const assumption_clone = assumptions[i].clone();
+                this._assumption_dict[assumptions[i].getType()].push(assumption_clone);
+                this._assumption_list.push(assumption_clone);
             };
     }
 
-    getAssumption(type: Type, num = 1): IFormula {
-        return _.nth(this.assumptionDict[type], num-1);
+    getAssumption(type: string, num = 1): IFormula {
+        return _.nth(this._assumption_dict[type], num-1);
     }
 
-    getAllAssumptions(type: Type): IFormula[] {
-        return this.assumptionDict[type];
+    getAllAssumptions(type: string): IFormula[] {
+        return this._assumption_dict[type];
     }
 
     addAssumption(assumption: IFormula) {
         if(assumption !== undefined) {
-            this.assumptionList.push(assumption);
-            this.assumptionDict[assumption.getType()].push(assumption);
+            this._assumption_list.push(assumption);
+            this._assumption_dict[assumption.getType()].push(assumption);
         }
     }
 
     isAssumption(assumption: IFormula) {
-       return _.find(this.assumptionList, function(_assump) {
+       return _.find(this._assumption_list, function(_assump) {
             return _assump.equalTo(assumption) !== undefined;
        });
     }
 
     removeAssumption(assumption: IFormula) {
         if(assumption !== undefined) {
-           this.assumptionList = 
-                _.remove(this.assumptionList, function(f) {
+           this._assumption_list = 
+                _.remove(this._assumption_list, function(f) {
                     return assumption.notEqualTo(f); 
                 });
 
-           this.assumptionDict[assumption.getType()] = 
-                _.remove(this.assumptionDict[assumption.getType()], function(f: IFormula) {
+           this._assumption_dict[assumption.getType()] = 
+                _.remove(this._assumption_dict[assumption.getType()], function(f: IFormula) {
                     return assumption.notEqualTo(f); 
                 });
         }
@@ -86,7 +86,7 @@ export class Theorem {
         new_thm.lemma = this.lemma;
 
         var new_assumptions: IFormula[] = [];
-        this.assumptionList.forEach(function(assumption) {
+        this._assumption_list.forEach(function(assumption) {
             new_assumptions.push(assumption);
         });
         new_thm.assumptions = new_assumptions;
@@ -95,8 +95,8 @@ export class Theorem {
 
     toString() {
         if(this.lemma !== undefined) {
-            if(this.assumptionList !== undefined && this.assumptionList.length > 0)
-                return "[ " + this.assumptionList.join(", ") + " ] |- " + String(this.lemma); 
+            if(this._assumption_list !== undefined && this._assumption_list.length > 0)
+                return "[ " + this._assumption_list.join(", ") + " ] |- " + String(this.lemma); 
             if(this.lemma !== undefined)
                 return "|- " + String(this.lemma);
             }
@@ -104,10 +104,4 @@ export class Theorem {
     }
 }
 
-export const TheoremConstructor = function() {
-    return new Theorem();
-}
-
-// export () => {
-//     return new Theorem();
-// }
+module.exports = () => new Theorem()

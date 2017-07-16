@@ -5,22 +5,22 @@ export interface IFormula {
     toString: () => string,
     equalTo: (f: IFormula) => boolean,
     notEqualTo: (f: IFormula) => boolean,
-    getType: () => Type
+    getType: () => string
 }
 
-export enum Type {
-    Atom,
-    Not,
-    Constant,
-    Iff,
-    Imp,
-    And,
-    Or
+export class Type {
+    static Atom = "atom";
+    static Not = "not";
+    static Constant = "constant";
+    static Iff = "iff";
+    static Imp = "imp";
+    static And = "and";
+    static Or = "or";
 }
 
 class BaseFormula {
-    protected type: Type;
-    constructor(type: Type) {
+    protected type: string;
+    constructor(type: string) {
         this.type = type;
     }
 
@@ -102,7 +102,7 @@ export class Not extends BaseFormula implements IFormula {
 }
 
 export class BinaryConnective extends BaseFormula {
-    constructor(type: Type, protected op1: IFormula, protected op2: IFormula) {
+    constructor(type: string, protected op1: IFormula, protected op2: IFormula) {
         super(type);
         this.op1 = op1;
         this.op2 = op2;
