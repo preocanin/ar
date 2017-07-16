@@ -40,10 +40,10 @@ export class Proof {
     }
 
     notI() {
-        if(this.currentThm.lemma.type == "not") {
+        if(this.currentThm.lemma.getType() === Type.Not) {
             var goal = this.currentThm.clone();
 
-            var new_assumption = this.currentThm.lemma.op;
+            var new_assumption = (<Not>this.currentThm.lemma).op;
 
             goal.lemma = new Constant(false);
             goal.addAssumption(new_assumption);
@@ -57,12 +57,12 @@ export class Proof {
     }
 
     conjI() {
-        if(this.currentThm.lemma.type == "and") {
+        if(this.currentThm.lemma.getType() === Type.And) {
             var goal_1= this.currentThm.clone();
             var goal_2 = this.currentThm.clone();
 
-            goal_1.lemma = this.currentThm.lemma.op1;
-            goal_2.lemma = this.currentThm.lemma.op2;
+            goal_1.lemma = (<And>this.currentThm.lemma).op1;
+            goal_2.lemma = (<And>this.currentThm.lemma).op2;
 
             this._states.push(_.drop(this.currentGoals));
             this.currentGoals.push(goal_1);
@@ -74,11 +74,11 @@ export class Proof {
     }
 
     impI() {
-        if(this.currentThm.lemma.type == Type) {
+        if(this.currentThm.lemma.getType() === Type.Imp) {
             var goal = this.currentThm.clone();
 
-            var op1 = this.currentThm.lemma.op1; 
-            var op2 = this.currentThm.lemma.op2;
+            var op1 = (<Imp>this.currentThm.lemma).op1; 
+            var op2 = (<Imp>this.currentThm.lemma).op2;
 
             goal.lemma = op2;
             goal.addAssumption(op1);
@@ -93,10 +93,10 @@ export class Proof {
     }
 
     disjI1() {
-        if(this.currentThm.lemma.type == "or") {
+        if(this.currentThm.lemma.getType() === Type.Or) {
             var goal = this.currentThm.clone();
 
-            var op1 = this.currentThm.lemma.op1;
+            var op1 = (<Or>this.currentThm.lemma).op1;
 
             goal.lemma = op1;
 
@@ -109,10 +109,10 @@ export class Proof {
     }
 
     disjI2() {
-        if(this.currentThm.lemma.type == Type.Or) {
+        if(this.currentThm.lemma.getType() === Type.Or) {
             var goal = this.currentThm.clone();
 
-            var op2 = this.currentThm.lemma.op2;
+            var op2 = (<Or>this.currentThm.lemma).op2;
 
             goal.lemma = op2;
 
@@ -122,7 +122,6 @@ export class Proof {
             return true;
         }
         return false;
-
     }
 
     ccontr() {
@@ -159,17 +158,17 @@ export class Proof {
     // 1. [assump1, assump2, ...] |- op1
     // 2. [op2, assump1, assump2, ...] |- lemma
     impE(num = 1) {
-        var assumption = this.currentThm.getAssumption("imp",num);
+        var assumption = this.currentThm.getAssumption(Type.Imp, num);
         if(assumption !== undefined) {
             // We must clone theorem because of object sharing
             var goal_1 = this.currentThm.clone();
             var goal_2 = this.currentThm.clone();
 
             goal_1.removeAssumption(assumption);
-            goal_1.lemma = assumption.op1;
+            goal_1.lemma = (<Imp>assumption).op1;
 
             goal_2.removeAssumption(assumption);
-            goal_2.addAssumption(assumption.op2);
+            goal_2.addAssumption((<Imp>assumption).op2);
 
             this._states.push(_.drop(this.currentGoals)); 
             this.currentGoals.push(goal_1);
@@ -181,14 +180,14 @@ export class Proof {
     }
 
     mp(num = 1) {
-        var imps = this.currentThm.getAllAssumptions("imp");
+        var imps = this.currentThm.getAllAssumptions(Type.Imp);
         if(imps.length > 0) {
             var mp_imp = imps[num-1];
-            if(this.currentThm.lemma.equalTo(mp_imp.op2)) {
+            if(this.currentThm.lemma.equalTo((<Imp>mp_imp).op2)) {
                 var goal = this.currentThm.clone();
 
                 goal.removeAssumption(mp_imp);
-                goal.lemma = mp_imp.op2;
+                goal.lemma = (<Imp>mp_imp).op2;
 
                 this._states.push(_.drop(this.currentGoals));
                 this.currentGoals.push(goal);
@@ -200,12 +199,12 @@ export class Proof {
     }
 
     notE(num = 1) {
-        var assumption = this.currentThm.getAssumption("not",num);
+        var assumption = this.currentThm.getAssumption(Type.Not, num);
         if(assumption !== undefined) {
             var goal = this.currentThm.clone();
 
             goal.removeAssumption(assumption);
-            goal.lemma = assumption.op;
+            goal.lemma = (<Not>assumption).op;
 
             this._states.push(_.drop(this.currentGoals)); 
             this.currentGoals.push(goal);
@@ -216,13 +215,13 @@ export class Proof {
     }
 
     conjE(num = 1) {
-        var assumption = this.currentThm.getAssumption("and",num);
+        var assumption = this.currentThm.getAssumption(Type.And, num);
         if(assumption !== undefined) {
             var goal = this.currentThm.clone();
 
             goal.removeAssumption(assumption);
-            goal.addAssumption(assumption.op1);
-            goal.addAssumption(assumption.op2);
+            goal.addAssumption((<And>assumption).op1);
+            goal.addAssumption((<And>assumption).op2);
 
             this._states.push(_.drop(this.currentGoals));
             this.currentGoals.push(goal);
@@ -233,16 +232,16 @@ export class Proof {
     }
 
     disjE(num = 1) {
-        var assumption = this.currentThm.getAssumption("or",num);
+        var assumption = this.currentThm.getAssumption(Type.Or, num);
         if(assumption !== undefined) {
             var goal_1 = this.currentThm.clone();
             var goal_2 = this.currentThm.clone();
 
             goal_1.removeAssumption(assumption);
-            goal_1.addAssumption(assumption.op1);
+            goal_1.addAssumption((<Or>assumption).op1);
 
             goal_2.removeAssumption(assumption);
-            goal_2.addAssumption(assumption.op2);
+            goal_2.addAssumption((<Or>assumption).op2);
 
             this._states.push(_.drop(this.currentGoals));
             this.currentGoals.push(goal_1);
@@ -263,5 +262,3 @@ export class Proof {
         return out_string;
     }
 }
-
-module.exports = Proof;

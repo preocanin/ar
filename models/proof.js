@@ -1,12 +1,8 @@
 'use strict';
-var _ = require('lodash');
-var Formula = require('./formula');
+Object.defineProperty(exports, "__esModule", { value: true });
+var _ = require("lodash");
+var formula_1 = require("./formula");
 var Proof = (function () {
-    /* --- Proof ---
-     * Each proof consists of states. When we apply some deduction rule we
-     * change the state of our proof. In order to be able to go back to
-     * previous state we must hold all of them.
-     */
     function Proof(thm) {
         if (thm === undefined)
             throw "Proof: constructor: theorem supplied can't be undefined";
@@ -19,13 +15,11 @@ var Proof = (function () {
         configurable: true
     });
     Object.defineProperty(Proof.prototype, "currentGoals", {
-        // Return current list of goals
         get: function () { return _.last(this._states); },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Proof.prototype, "currentThm", {
-        // Return first subgoal(theorem) from current goal list
         get: function () { return _.head(this.currentGoals); },
         enumerable: true,
         configurable: true
@@ -43,10 +37,10 @@ var Proof = (function () {
         return false;
     };
     Proof.prototype.notI = function () {
-        if (this.currentThm.lemma.type == "not") {
+        if (this.currentThm.lemma.getType() === formula_1.Type.Not) {
             var goal = this.currentThm.clone();
             var new_assumption = this.currentThm.lemma.op;
-            goal.lemma = new Formula.Constant(false);
+            goal.lemma = new formula_1.Constant(false);
             goal.addAssumption(new_assumption);
             this._states.push(_.drop(this.currentGoals));
             this.currentGoals.push(goal);
@@ -55,7 +49,7 @@ var Proof = (function () {
         return false;
     };
     Proof.prototype.conjI = function () {
-        if (this.currentThm.lemma.type == "and") {
+        if (this.currentThm.lemma.getType() === formula_1.Type.And) {
             var goal_1 = this.currentThm.clone();
             var goal_2 = this.currentThm.clone();
             goal_1.lemma = this.currentThm.lemma.op1;
@@ -68,13 +62,12 @@ var Proof = (function () {
         return false;
     };
     Proof.prototype.impI = function () {
-        if (this.currentThm.lemma.type == "imp") {
+        if (this.currentThm.lemma.getType() === formula_1.Type.Imp) {
             var goal = this.currentThm.clone();
             var op1 = this.currentThm.lemma.op1;
             var op2 = this.currentThm.lemma.op2;
             goal.lemma = op2;
             goal.addAssumption(op1);
-            // New state = Old state - { Head(Old state) };
             this._states.push(_.drop(this.currentGoals));
             this.currentGoals.push(goal);
             return true;
@@ -82,7 +75,7 @@ var Proof = (function () {
         return false;
     };
     Proof.prototype.disjI1 = function () {
-        if (this.currentThm.lemma.type == "or") {
+        if (this.currentThm.lemma.getType() === formula_1.Type.Or) {
             var goal = this.currentThm.clone();
             var op1 = this.currentThm.lemma.op1;
             goal.lemma = op1;
@@ -93,7 +86,7 @@ var Proof = (function () {
         return false;
     };
     Proof.prototype.disjI2 = function () {
-        if (this.currentThm.lemma.type == "or") {
+        if (this.currentThm.lemma.getType() === formula_1.Type.Or) {
             var goal = this.currentThm.clone();
             var op2 = this.currentThm.lemma.op2;
             goal.lemma = op2;
@@ -105,8 +98,8 @@ var Proof = (function () {
     };
     Proof.prototype.ccontr = function () {
         var goal = this.currentThm.clone();
-        var new_assumption = new Formula.Not(this.currentThm.lemma);
-        goal.lemma = new Formula.Constant(false);
+        var new_assumption = new formula_1.Not(this.currentThm.lemma);
+        goal.lemma = new formula_1.Constant(false);
         goal.addAssumption(new_assumption);
         this._states.push(_.drop(this.currentGoals));
         this.currentGoals.push(goal);
@@ -115,7 +108,7 @@ var Proof = (function () {
     Proof.prototype.classical = function () {
         if (this.currentThm.lemma !== undefined) {
             var goal = this.currentThm.clone();
-            var new_assumption = new Formula.Not(goal.lemma);
+            var new_assumption = new formula_1.Not(goal.lemma);
             goal.addAssumption(new_assumption);
             this._states.push(_.drop(this.currentGoals));
             this.currentGoals.push(goal);
@@ -123,15 +116,10 @@ var Proof = (function () {
         }
         return false;
     };
-    // [ op1 => op2, assump1, assump2, ... ] |- lemma
-    // we get 2 subgoals:
-    // 1. [assump1, assump2, ...] |- op1
-    // 2. [op2, assump1, assump2, ...] |- lemma
     Proof.prototype.impE = function (num) {
         if (num === void 0) { num = 1; }
-        var assumption = this.currentThm.getAssumption("imp", num);
+        var assumption = this.currentThm.getAssumption(formula_1.Type.Imp, num);
         if (assumption !== undefined) {
-            // We must clone theorem because of object sharing
             var goal_1 = this.currentThm.clone();
             var goal_2 = this.currentThm.clone();
             goal_1.removeAssumption(assumption);
@@ -147,7 +135,7 @@ var Proof = (function () {
     };
     Proof.prototype.mp = function (num) {
         if (num === void 0) { num = 1; }
-        var imps = this.currentThm.getAllAssumptions("imp");
+        var imps = this.currentThm.getAllAssumptions(formula_1.Type.Imp);
         if (imps.length > 0) {
             var mp_imp = imps[num - 1];
             if (this.currentThm.lemma.equalTo(mp_imp.op2)) {
@@ -163,7 +151,7 @@ var Proof = (function () {
     };
     Proof.prototype.notE = function (num) {
         if (num === void 0) { num = 1; }
-        var assumption = this.currentThm.getAssumption("not", num);
+        var assumption = this.currentThm.getAssumption(formula_1.Type.Not, num);
         if (assumption !== undefined) {
             var goal = this.currentThm.clone();
             goal.removeAssumption(assumption);
@@ -176,7 +164,7 @@ var Proof = (function () {
     };
     Proof.prototype.conjE = function (num) {
         if (num === void 0) { num = 1; }
-        var assumption = this.currentThm.getAssumption("and", num);
+        var assumption = this.currentThm.getAssumption(formula_1.Type.And, num);
         if (assumption !== undefined) {
             var goal = this.currentThm.clone();
             goal.removeAssumption(assumption);
@@ -190,7 +178,7 @@ var Proof = (function () {
     };
     Proof.prototype.disjE = function (num) {
         if (num === void 0) { num = 1; }
-        var assumption = this.currentThm.getAssumption("or", num);
+        var assumption = this.currentThm.getAssumption(formula_1.Type.Or, num);
         if (assumption !== undefined) {
             var goal_1 = this.currentThm.clone();
             var goal_2 = this.currentThm.clone();
@@ -216,4 +204,5 @@ var Proof = (function () {
     };
     return Proof;
 }());
-module.exports = Proof;
+exports.Proof = Proof;
+//# sourceMappingURL=proof.js.map

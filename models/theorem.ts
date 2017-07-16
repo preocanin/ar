@@ -3,21 +3,15 @@
 import * as _ from "lodash";
 import { IFormula, And, Or, Iff, Imp, Constant, Not, Atom, Type } from './formula';
 
+
 export class Theorem {
     /* --- Theorem ---
      * Each theorem is represented with list of assumptions(left side) and a 
      * lemma (right side) (assumptions |- lemma).
      */
+    private _lemma: IFormula;
     private assumptionList: IFormula[];
-    private assumptionDict: {
-            atom: Atom[],
-            constant: Constant[],
-            not: Not[],
-            and: And[],
-            or: Or[],
-            imp: Imp[],
-            iff: Iff[]
-    }
+    private assumptionDict: { [type: string]: IFormula[] }
     
     constructor() {
         this.assumptionList = [];
@@ -35,51 +29,51 @@ export class Theorem {
 
     set lemma(lemma) {
         if(lemma !== undefined)
-            this.lemma = lemma.clone();
+            this._lemma = lemma.clone();
     }
 
-    get lemma(): Theorem { return this.lemma; }
+    get lemma() { return this._lemma; }
 
-    set assumptions(assumptions) {
+    set assumptions(assumptions: IFormula[]) {
         this.assumptionList = [];
         if(assumptions !== undefined)
             for(let i = 0; i < assumptions.length ; i++) {
                 var assumption_clone = assumptions[i].clone();
-                this.assumptionDict[assumptions[i].type].push(assumption_clone);
+                this.assumptionDict[assumptions[i].getType()].push(assumption_clone);
                 this.assumptionList.push(assumption_clone);
             };
     }
 
-    getAssumption(type, num = 1) {
+    getAssumption(type: Type, num = 1): IFormula {
         return _.nth(this.assumptionDict[type], num-1);
     }
 
-    getAllAssumptions(type) {
+    getAllAssumptions(type: Type): IFormula[] {
         return this.assumptionDict[type];
     }
 
-    addAssumption(assumption) {
+    addAssumption(assumption: IFormula) {
         if(assumption !== undefined) {
             this.assumptionList.push(assumption);
-            this.assumptionDict[assumption.type].push(assumption);
+            this.assumptionDict[assumption.getType()].push(assumption);
         }
     }
 
-    isAssumption(assumption) {
+    isAssumption(assumption: IFormula) {
        return _.find(this.assumptionList, function(_assump) {
             return _assump.equalTo(assumption) !== undefined;
        });
     }
 
-    removeAssumption(assumption) {
+    removeAssumption(assumption: IFormula) {
         if(assumption !== undefined) {
            this.assumptionList = 
                 _.remove(this.assumptionList, function(f) {
                     return assumption.notEqualTo(f); 
                 });
 
-           this.assumptionDict[assumption.type] = 
-                _.remove(this.assumptionDict[assumption.type], function(f) {
+           this.assumptionDict[assumption.getType()] = 
+                _.remove(this.assumptionDict[assumption.getType()], function(f: IFormula) {
                     return assumption.notEqualTo(f); 
                 });
         }
@@ -91,7 +85,7 @@ export class Theorem {
         var new_thm = new Theorem();
         new_thm.lemma = this.lemma;
 
-        var new_assumptions = [];
+        var new_assumptions: IFormula[] = [];
         this.assumptionList.forEach(function(assumption) {
             new_assumptions.push(assumption);
         });
@@ -110,6 +104,10 @@ export class Theorem {
     }
 }
 
-// module.exports = function() {
+export const TheoremConstructor = function() {
+    return new Theorem();
+}
+
+// export () => {
 //     return new Theorem();
 // }

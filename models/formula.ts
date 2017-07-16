@@ -20,7 +20,7 @@ export enum Type {
 
 class BaseFormula {
     protected type: Type;
-    constructor(type){
+    constructor(type: Type) {
         this.type = type;
     }
 
@@ -42,23 +42,22 @@ export class Atom extends BaseFormula implements IFormula {
     }
 
     equalTo(f: Atom) {
-        return f.type == this.type &&
-               f.lit == this.lit;
+        return f.type === this.type &&
+               f.lit === this.lit;
     }
     
     notEqualTo(f: Atom) {
         return !this.equalTo(f);
     }
-
 }
 
-export class Constant extends BaseFormula implements IFormula{
+export class Constant extends BaseFormula implements IFormula {
     constructor(public val: boolean) {
         super(Type.Constant);
         this.val = val;
     }
 
-    clone() {
+    clone(): Constant {
         return new Constant(this.val);
     }
 
@@ -67,8 +66,8 @@ export class Constant extends BaseFormula implements IFormula{
     }
 
     equalTo(f: Constant) {
-        return f.type == this.type &&
-               f.val == this.val;
+        return f.type === this.type &&
+               f.val === this.val;
     }
     
     notEqualTo(f: Constant) {
@@ -76,28 +75,28 @@ export class Constant extends BaseFormula implements IFormula{
     }
 }
 
-export class Not extends BaseFormula implements IFormula{
+export class Not extends BaseFormula implements IFormula {
     constructor(public op: IFormula) {
         super(Type.Not);
         this.op = op;
     }
 
-    clone() {
+    clone(): IFormula {
         return new Not(this.op.clone());
     }
 
     toString() {
-        if(this.op.getType() == Type.Atom)
+        if(this.op.getType() === Type.Atom)
             return "~" + String(this.op);
         return "(~ " + String(this.op) + " )";
     }
 
-    equalTo(f: IFormula) {
-        return (<Not>f).type == this.type &&
-               this.op.equalTo((<Not>f).op);
+    equalTo(f: Not) {
+        return f.getType() === this.type &&
+               this.op.equalTo(f.op);
     }
     
-    notEqualTo(f: IFormula) {
+    notEqualTo(f: Not) {
         return !this.equalTo(f);
     }
 }
@@ -109,19 +108,19 @@ export class BinaryConnective extends BaseFormula {
         this.op2 = op2;
     }
 
-    equalTo(f) {
-        return f.type == this.getType() &&
-               this.op1.equalTo(f.op1)  &&
-               this.op2.equalTo(f.op2);
+    equalTo(f: IFormula) {
+        return (f).getType() === this.getType() &&
+               this.op1.equalTo((<any>f).op1)  &&
+               this.op2.equalTo((<any>f).op2);
     }
     
-    notEqualTo(f) {
+    notEqualTo(f: IFormula) {
         return !this.equalTo(f);
     }
 }
 
 export class And extends BinaryConnective implements IFormula {
-    constructor(op1: IFormula, op2: IFormula) {
+    constructor(public op1: IFormula, public op2: IFormula) {
         super(Type.And, op1, op2);
     }
 
@@ -135,7 +134,7 @@ export class And extends BinaryConnective implements IFormula {
 }
 
 export class Or extends BinaryConnective implements IFormula{
-    constructor(op1: IFormula, op2: IFormula) {
+    constructor(public op1: IFormula, public op2: IFormula) {
         super(Type.Or, op1, op2);
     }
 
@@ -149,7 +148,7 @@ export class Or extends BinaryConnective implements IFormula{
 }
 
 export class Imp extends BinaryConnective {
-    constructor(op1: IFormula, op2: IFormula) {
+    constructor(public op1: IFormula, public op2: IFormula) {
         super(Type.Imp, op1, op2);
     }
 
