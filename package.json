@@ -4,6 +4,7 @@
   "description": "Proof assistant for natural deduction",
   "main": "app.js",
   "scripts": {
+    "compile": "tsc",
     "start": "node app.js",
     "test": "jasmine"
   },
