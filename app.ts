@@ -39,30 +39,59 @@ rl.question('What\'s your theorem, girl?', (answer) => {
             var thm = theorem_parser.parse(answer);
             proof = new Proof(thm);
         }
-        
-        if(proof !== undefined) {
-            proof.classical();
-            console.log(String(proof));
-        }
 
         rl.pause();
-        commandloop();
+        console.log(String(proof));
+        commandloop(proof);
     }
   });
 }
 
-function commandloop() {
-  rl.question("enter command> ", function (command_string) {
+function commandloop(proof: Proof, prevCommand = "nothing") {
+    var commands = ["print", "invalid", "nothing", "help"];
+    if( !_.includes(commands, prevCommand) && 
+        proof !== undefined)
+        console.log(String(proof));
+
+    rl.question("enter command> ", function (command_string) {
 
     var command = command_parser.parse(command_string);
     rl.pause();
 
-    if(command.type == "quit")
-          return;
-    if(command.type == "help")
-          console.log("Neki help");
+    switch(command.type) {
+        case "impI":
+        case "notI":
+        case "conjI":
+        case "disjI1":
+        case "disjI2":
+        case "ccontr":
+        case "classical":
+            eval("proof[command.type]()");
+            break;
+        case "impE":
+        case "notE":
+        case "conjE":
+        case "disjE":
+        case "mp":
+            eval("proof[command.type](command.argument)");
+            break;
+        case "back":
+            proof.back(command.argument);
+            break;
+        case "print":
+            console.log(String(proof));
+            break;
+        case "quit":
+            return;
+        case "invalid":
+            console.log("Unknown command");
+            break;
+        case "help":
+            console.log("Neki help");
+            break;
+    }
     if(command.type != "done") {
-        commandloop();
+        commandloop(proof, command.type);
     }
     else 
         mainloop();

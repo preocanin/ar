@@ -3,6 +3,7 @@
 %%
 
 [1-9][0-9]*\b           return 'NUMBER';
+[pP][rR][iI][nN][tT]\b  return 'PRINT';
 [bB][aA][cC][kK]\b      return 'BACK';
 [dD][oO][nN][eE]\b      return 'DONE';
 [hH][eE][lL][pP]\b      return 'HELP';
@@ -65,6 +66,10 @@ type        : ASSUMPTION end
               {
                   return { type: "done" };
               }
+            | PRINT end
+              {
+                  return { type: "print" };
+              }
             | HELP end
               {
                   return { type: "help" };
@@ -72,6 +77,14 @@ type        : ASSUMPTION end
             | QUIT end
               {
                   return { type: "quit" };
+              }
+            | end
+              {
+                  return { type: "nothing" };
+              }
+            | INVALID
+              {
+                  return { type: "invalid" };
               }
             ;
 

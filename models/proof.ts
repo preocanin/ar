@@ -21,35 +21,37 @@ export class Proof {
     get states() { return this._states; }
 
     // Return current list of goals
-    get currentGoals() { return _.last(this._states); }
+    get currentGoal() { return _.last(this._states); }
 
     // Return first subgoal(theorem) from current goal list
-    get currentThm() { return _.head(this.currentGoals); }
+    get currentSubgoal() { return _.head(this.currentGoal); }
 
     back(num_steps = 1) {
-        _.dropRight(this._states,num_steps);
+        var head = _.head(this._states);
+        this._states = _.concat([head],
+                                _.dropRight(_.tail(this._states),num_steps));
     }
 
     assumption() {
-        var current_goal = this.currentThm;
+        var current_goal = this.currentSubgoal;
         if(current_goal.isAssumption(current_goal.lemma)) {
-            this._states.push(_.drop(this.currentGoals));
+            this._states.push(_.drop(this.currentGoal));
             return true;
         }
         return false;
     }
 
     notI() {
-        if(this.currentThm.lemma.getType() === Type.Not) {
-            var goal = this.currentThm.clone();
+        if(this.currentSubgoal.lemma.getType() === Type.Not) {
+            var goal = this.currentSubgoal.clone();
 
-            var new_assumption = (<Not>this.currentThm.lemma).op;
+            var new_assumption = (<Not>this.currentSubgoal.lemma).op;
 
             goal.lemma = new Constant(false);
             goal.addAssumption(new_assumption);
             
-            this._states.push(_.drop(this.currentGoals)); 
-            this.currentGoals.push(goal);
+            this._states.push(_.drop(this.currentGoal)); 
+            this.currentGoal.push(goal);
             
             return true;
         }
@@ -57,16 +59,16 @@ export class Proof {
     }
 
     conjI() {
-        if(this.currentThm.lemma.getType() === Type.And) {
-            var goal_1= this.currentThm.clone();
-            var goal_2 = this.currentThm.clone();
+        if(this.currentSubgoal.lemma.getType() === Type.And) {
+            var goal_1= this.currentSubgoal.clone();
+            var goal_2 = this.currentSubgoal.clone();
 
-            goal_1.lemma = (<And>this.currentThm.lemma).op1;
-            goal_2.lemma = (<And>this.currentThm.lemma).op2;
+            goal_1.lemma = (<And>this.currentSubgoal.lemma).op1;
+            goal_2.lemma = (<And>this.currentSubgoal.lemma).op2;
 
-            this._states.push(_.drop(this.currentGoals));
-            this.currentGoals.push(goal_1);
-            this.currentGoals.push(goal_2);
+            this._states.push(_.drop(this.currentGoal));
+            this.currentGoal.push(goal_1);
+            this.currentGoal.push(goal_2);
 
             return true;
         }
@@ -74,18 +76,18 @@ export class Proof {
     }
 
     impI() {
-        if(this.currentThm.lemma.getType() === Type.Imp) {
-            var goal = this.currentThm.clone();
+        if(this.currentSubgoal.lemma.getType() === Type.Imp) {
+            var goal = this.currentSubgoal.clone();
 
-            var op1 = (<Imp>this.currentThm.lemma).op1; 
-            var op2 = (<Imp>this.currentThm.lemma).op2;
+            var op1 = (<Imp>this.currentSubgoal.lemma).op1; 
+            var op2 = (<Imp>this.currentSubgoal.lemma).op2;
 
             goal.lemma = op2;
             goal.addAssumption(op1);
 
             // New state = Old state - { Head(Old state) };
-            this._states.push(_.drop(this.currentGoals)); 
-            this.currentGoals.push(goal);
+            this._states.push(_.drop(this.currentGoal)); 
+            this.currentGoal.push(goal);
 
             return true;
         }
@@ -93,15 +95,15 @@ export class Proof {
     }
 
     disjI1() {
-        if(this.currentThm.lemma.getType() === Type.Or) {
-            var goal = this.currentThm.clone();
+        if(this.currentSubgoal.lemma.getType() === Type.Or) {
+            var goal = this.currentSubgoal.clone();
 
-            var op1 = (<Or>this.currentThm.lemma).op1;
+            var op1 = (<Or>this.currentSubgoal.lemma).op1;
 
             goal.lemma = op1;
 
-            this._states.push(_.drop(this.currentGoals));
-            this.currentGoals.push(goal);
+            this._states.push(_.drop(this.currentGoal));
+            this.currentGoal.push(goal);
 
             return true;
         }
@@ -109,15 +111,15 @@ export class Proof {
     }
 
     disjI2() {
-        if(this.currentThm.lemma.getType() === Type.Or) {
-            var goal = this.currentThm.clone();
+        if(this.currentSubgoal.lemma.getType() === Type.Or) {
+            var goal = this.currentSubgoal.clone();
 
-            var op2 = (<Or>this.currentThm.lemma).op2;
+            var op2 = (<Or>this.currentSubgoal.lemma).op2;
 
             goal.lemma = op2;
 
-            this._states.push(_.drop(this.currentGoals));
-            this.currentGoals.push(goal);
+            this._states.push(_.drop(this.currentGoal));
+            this.currentGoal.push(goal);
 
             return true;
         }
@@ -125,28 +127,28 @@ export class Proof {
     }
 
     ccontr() {
-        var goal = this.currentThm.clone();
+        var goal = this.currentSubgoal.clone();
 
-        var new_assumption = new Not(this.currentThm.lemma);
+        var new_assumption = new Not(this.currentSubgoal.lemma);
 
         goal.lemma = new Constant(false);
         goal.addAssumption(new_assumption);
 
-        this._states.push(_.drop(this.currentGoals));
-        this.currentGoals.push(goal);
+        this._states.push(_.drop(this.currentGoal));
+        this.currentGoal.push(goal);
 
         return true;
     }
 
     classical() {
-        if(this.currentThm.lemma !== undefined) {
-            var goal = this.currentThm.clone();
+        if(this.currentSubgoal.lemma !== undefined) {
+            var goal = this.currentSubgoal.clone();
             var new_assumption = new Not(goal.lemma);
 
             goal.addAssumption(new_assumption);
 
-            this._states.push(_.drop(this.currentGoals));
-            this.currentGoals.push(goal);
+            this._states.push(_.drop(this.currentGoal));
+            this.currentGoal.push(goal);
 
             return true;
         } 
@@ -158,11 +160,11 @@ export class Proof {
     // 1. [assump1, assump2, ...] |- op1
     // 2. [op2, assump1, assump2, ...] |- lemma
     impE(num = 1) {
-        var assumption = this.currentThm.getAssumption(Type.Imp, num);
+        var assumption = this.currentSubgoal.getAssumption(Type.Imp, num);
         if(assumption !== undefined) {
             // We must clone theorem because of object sharing
-            var goal_1 = this.currentThm.clone();
-            var goal_2 = this.currentThm.clone();
+            var goal_1 = this.currentSubgoal.clone();
+            var goal_2 = this.currentSubgoal.clone();
 
             goal_1.removeAssumption(assumption);
             goal_1.lemma = (<Imp>assumption).op1;
@@ -170,9 +172,9 @@ export class Proof {
             goal_2.removeAssumption(assumption);
             goal_2.addAssumption((<Imp>assumption).op2);
 
-            this._states.push(_.drop(this.currentGoals)); 
-            this.currentGoals.push(goal_1);
-            this.currentGoals.push(goal_2);
+            this._states.push(_.drop(this.currentGoal)); 
+            this.currentGoal.push(goal_1);
+            this.currentGoal.push(goal_2);
              
             return true;
         }
@@ -180,17 +182,17 @@ export class Proof {
     }
 
     mp(num = 1) {
-        var imps = this.currentThm.getAllAssumptions(Type.Imp);
+        var imps = this.currentSubgoal.getAllAssumptions(Type.Imp);
         if(imps.length > 0) {
             var mp_imp = imps[num-1];
-            if(this.currentThm.lemma.equalTo((<Imp>mp_imp).op2)) {
-                var goal = this.currentThm.clone();
+            if(this.currentSubgoal.lemma.equalTo((<Imp>mp_imp).op2)) {
+                var goal = this.currentSubgoal.clone();
 
                 goal.removeAssumption(mp_imp);
                 goal.lemma = (<Imp>mp_imp).op2;
 
-                this._states.push(_.drop(this.currentGoals));
-                this.currentGoals.push(goal);
+                this._states.push(_.drop(this.currentGoal));
+                this.currentGoal.push(goal);
 
                 return true;
             } 
@@ -199,15 +201,15 @@ export class Proof {
     }
 
     notE(num = 1) {
-        var assumption = this.currentThm.getAssumption(Type.Not, num);
+        var assumption = this.currentSubgoal.getAssumption(Type.Not, num);
         if(assumption !== undefined) {
-            var goal = this.currentThm.clone();
+            var goal = this.currentSubgoal.clone();
 
             goal.removeAssumption(assumption);
             goal.lemma = (<Not>assumption).op;
 
-            this._states.push(_.drop(this.currentGoals)); 
-            this.currentGoals.push(goal);
+            this._states.push(_.drop(this.currentGoal)); 
+            this.currentGoal.push(goal);
 
             return true;
         }
@@ -215,16 +217,16 @@ export class Proof {
     }
 
     conjE(num = 1) {
-        var assumption = this.currentThm.getAssumption(Type.And, num);
+        var assumption = this.currentSubgoal.getAssumption(Type.And, num);
         if(assumption !== undefined) {
-            var goal = this.currentThm.clone();
+            var goal = this.currentSubgoal.clone();
 
             goal.removeAssumption(assumption);
             goal.addAssumption((<And>assumption).op1);
             goal.addAssumption((<And>assumption).op2);
 
-            this._states.push(_.drop(this.currentGoals));
-            this.currentGoals.push(goal);
+            this._states.push(_.drop(this.currentGoal));
+            this.currentGoal.push(goal);
 
             return true;
         }
@@ -232,10 +234,10 @@ export class Proof {
     }
 
     disjE(num = 1) {
-        var assumption = this.currentThm.getAssumption(Type.Or, num);
+        var assumption = this.currentSubgoal.getAssumption(Type.Or, num);
         if(assumption !== undefined) {
-            var goal_1 = this.currentThm.clone();
-            var goal_2 = this.currentThm.clone();
+            var goal_1 = this.currentSubgoal.clone();
+            var goal_2 = this.currentSubgoal.clone();
 
             goal_1.removeAssumption(assumption);
             goal_1.addAssumption((<Or>assumption).op1);
@@ -243,9 +245,9 @@ export class Proof {
             goal_2.removeAssumption(assumption);
             goal_2.addAssumption((<Or>assumption).op2);
 
-            this._states.push(_.drop(this.currentGoals));
-            this.currentGoals.push(goal_1);
-            this.currentGoals.push(goal_2);
+            this._states.push(_.drop(this.currentGoal));
+            this.currentGoal.push(goal_1);
+            this.currentGoal.push(goal_2);
 
             return true;
         }
@@ -255,7 +257,7 @@ export class Proof {
     toString() {
         var i = 1;
         var out_string = "";
-        _.forEach(this.currentGoals, function(goal) {
+        _.forEach(this.currentGoal, function(goal) {
             out_string += i + ". " + String(goal) + "\n";
             i++;
         });

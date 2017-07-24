@@ -81,7 +81,7 @@ export class Theorem {
 
 
 
-    clone() {
+    clone() : Theorem {
         var new_thm = new Theorem();
         new_thm.lemma = this.lemma;
 
@@ -93,7 +93,7 @@ export class Theorem {
         return new_thm;
     }
 
-    toString() {
+    toString() : string {
         if(this.lemma !== undefined) {
             if(this._assumption_list !== undefined && this._assumption_list.length > 0)
                 return "[ " + this._assumption_list.join(", ") + " ] |- " + String(this.lemma); 
