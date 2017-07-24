@@ -4,7 +4,8 @@
   "description": "Proof assistant for natural deduction",
   "main": "app.js",
   "scripts": {
-    "start": "tsc && node app.js",
+    "restart": "tsc && node app.js",
+    "start": "node app.js",
     "test": "jasmine"
   },
   "license": "MIT",
