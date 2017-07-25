@@ -75,6 +75,9 @@ function commandloop(proof: Proof, prevCommand = "nothing") {
         case "mp":
             eval("proof[command.type](command.argument)");
             break;
+        case "assumption":
+            proof.assumption();
+            break;
         case "back":
             proof.back(command.argument);
             break;
@@ -89,6 +92,10 @@ function commandloop(proof: Proof, prevCommand = "nothing") {
         case "help":
             console.log("Neki help");
             break;
+    }
+    if(_.isEmpty(proof.currentGoal)) {
+        command.type = "done";
+        console.log("\nTheorem proved!\n");
     }
     if(command.type != "done") {
         commandloop(proof, command.type);

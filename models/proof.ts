@@ -18,6 +18,14 @@ export class Proof {
         this._states.push([thm]);
     }
 
+    // Drop top subgoal and add new subgoal/s instead 
+    private _dropAndAdd = (subs: Theorem[]) => {
+        this._states.push(_.drop(this.currentGoal));
+        for(var i in subs)
+            this.currentGoal.push(subs[i]);
+    }
+
+
     get states() { return this._states; }
 
     // Return current list of goals
@@ -35,7 +43,7 @@ export class Proof {
     assumption() {
         var current_goal = this.currentSubgoal;
         if(current_goal.isAssumption(current_goal.lemma)) {
-            this._states.push(_.drop(this.currentGoal));
+            this._dropAndAdd([]);
             return true;
         }
         return false;
@@ -50,8 +58,7 @@ export class Proof {
             goal.lemma = new Constant(false);
             goal.addAssumption(new_assumption);
             
-            this._states.push(_.drop(this.currentGoal)); 
-            this.currentGoal.push(goal);
+            this._dropAndAdd([goal]);
             
             return true;
         }
@@ -66,9 +73,7 @@ export class Proof {
             goal_1.lemma = (<And>this.currentSubgoal.lemma).op1;
             goal_2.lemma = (<And>this.currentSubgoal.lemma).op2;
 
-            this._states.push(_.drop(this.currentGoal));
-            this.currentGoal.push(goal_1);
-            this.currentGoal.push(goal_2);
+            this._dropAndAdd([goal_1,goal_2]);
 
             return true;
         }
@@ -86,8 +91,7 @@ export class Proof {
             goal.addAssumption(op1);
 
             // New state = Old state - { Head(Old state) };
-            this._states.push(_.drop(this.currentGoal)); 
-            this.currentGoal.push(goal);
+            this._dropAndAdd([goal]);
 
             return true;
         }
@@ -102,8 +106,7 @@ export class Proof {
 
             goal.lemma = op1;
 
-            this._states.push(_.drop(this.currentGoal));
-            this.currentGoal.push(goal);
+            this._dropAndAdd([goal]);
 
             return true;
         }
@@ -118,8 +121,7 @@ export class Proof {
 
             goal.lemma = op2;
 
-            this._states.push(_.drop(this.currentGoal));
-            this.currentGoal.push(goal);
+            this._dropAndAdd([goal]);
 
             return true;
         }
@@ -134,8 +136,7 @@ export class Proof {
         goal.lemma = new Constant(false);
         goal.addAssumption(new_assumption);
 
-        this._states.push(_.drop(this.currentGoal));
-        this.currentGoal.push(goal);
+        this._dropAndAdd([goal]);
 
         return true;
     }
@@ -147,8 +148,7 @@ export class Proof {
 
             goal.addAssumption(new_assumption);
 
-            this._states.push(_.drop(this.currentGoal));
-            this.currentGoal.push(goal);
+            this._dropAndAdd([goal]);
 
             return true;
         } 
@@ -172,9 +172,7 @@ export class Proof {
             goal_2.removeAssumption(assumption);
             goal_2.addAssumption((<Imp>assumption).op2);
 
-            this._states.push(_.drop(this.currentGoal)); 
-            this.currentGoal.push(goal_1);
-            this.currentGoal.push(goal_2);
+            this._dropAndAdd([goal_1,goal_2]);
              
             return true;
         }
@@ -191,8 +189,7 @@ export class Proof {
                 goal.removeAssumption(mp_imp);
                 goal.lemma = (<Imp>mp_imp).op2;
 
-                this._states.push(_.drop(this.currentGoal));
-                this.currentGoal.push(goal);
+                this._dropAndAdd([goal]);
 
                 return true;
             } 
@@ -208,8 +205,7 @@ export class Proof {
             goal.removeAssumption(assumption);
             goal.lemma = (<Not>assumption).op;
 
-            this._states.push(_.drop(this.currentGoal)); 
-            this.currentGoal.push(goal);
+            this._dropAndAdd([goal]);
 
             return true;
         }
@@ -225,8 +221,7 @@ export class Proof {
             goal.addAssumption((<And>assumption).op1);
             goal.addAssumption((<And>assumption).op2);
 
-            this._states.push(_.drop(this.currentGoal));
-            this.currentGoal.push(goal);
+            this._dropAndAdd([goal]);
 
             return true;
         }
@@ -245,9 +240,7 @@ export class Proof {
             goal_2.removeAssumption(assumption);
             goal_2.addAssumption((<Or>assumption).op2);
 
-            this._states.push(_.drop(this.currentGoal));
-            this.currentGoal.push(goal_1);
-            this.currentGoal.push(goal_2);
+            this._dropAndAdd([goal_1,goal_2]);
 
             return true;
         }
@@ -256,11 +249,21 @@ export class Proof {
 
     toString() {
         var i = 1;
-        var out_string = "";
+        var max_len = 0;
+        var subgoals_string = "";
+
         _.forEach(this.currentGoal, function(goal) {
-            out_string += i + ". " + String(goal) + "\n";
+            var subgoal = String(goal);
+            if(max_len < subgoal.length)
+                max_len = subgoal.length;
+            subgoals_string += i + ". " + subgoal + "\n";
             i++;
         });
+
+        var out_string = "\n" + _.repeat("-", max_len + 4) + "\n";
+        out_string += subgoals_string;
+        out_string += _.repeat("-", max_len + 4) + "\n";
+
         return out_string;
     }
 }
