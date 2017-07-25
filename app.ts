@@ -8,6 +8,10 @@ import { Proof } from './models/proof';
 // import { Theorem } from './models/theorem';
 
 const jison = require('jison');
+const clc = require('cli-color');
+
+const error = clc.xterm(255).bgXterm(160);
+const success = clc.xterm(155);
 
 var t_bnf = fs.readFileSync('./parsers/theorem.jison', 'utf8');
 const theorem_parser = new jison.Parser(t_bnf);
@@ -37,12 +41,18 @@ rl.question('What\'s your theorem, girl?', (answer) => {
     else {
         if(proof === undefined) {
             var thm = theorem_parser.parse(answer);
-            proof = new Proof(thm);
+            if(thm === true)
+                thm = undefined;
+            if(thm !== undefined)
+                proof = new Proof(thm);
         }
 
         rl.pause();
-        console.log(String(proof));
-        commandloop(proof);
+        if(proof !== undefined) {
+            console.log(String(proof));
+            commandloop(proof);
+        } else 
+            mainloop();
     }
   });
 }
@@ -87,7 +97,7 @@ function commandloop(proof: Proof, prevCommand = "nothing") {
         case "quit":
             return;
         case "invalid":
-            console.log("Unknown command");
+            console.log(error("Unknown command"));
             break;
         case "help":
             console.log("Neki help");
@@ -95,7 +105,7 @@ function commandloop(proof: Proof, prevCommand = "nothing") {
     }
     if(_.isEmpty(proof.currentGoal)) {
         command.type = "done";
-        console.log("\nTheorem proved!\n");
+        console.log("\n" + success("Theorem proved!") + "\n");
     }
     if(command.type != "done") {
         commandloop(proof, command.type);

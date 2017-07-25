@@ -4,6 +4,11 @@ import * as _ from "lodash";
 import { And, Or, Iff, Imp, Constant, Not, Atom, Type } from './formula';
 import { Theorem } from './theorem';
 
+const clc = require('cli-color');
+
+const del = clc.xterm(38);
+const num = clc.xterm(44);
+
 export class Proof {
     /* --- Proof ---
      * Each proof consists of states. When we apply some deduction rule we
@@ -42,7 +47,10 @@ export class Proof {
 
     assumption() {
         var current_goal = this.currentSubgoal;
-        if(current_goal.isAssumption(current_goal.lemma)) {
+        if(current_goal.lemma.getType() == "constant" && (<Constant>current_goal.lemma).val) {
+            this._dropAndAdd([]);
+            return true;
+        } else if(current_goal.isAssumption(current_goal.lemma)) {
             this._dropAndAdd([]);
             return true;
         }
@@ -252,17 +260,20 @@ export class Proof {
         var max_len = 0;
         var subgoals_string = "";
 
+        if(this.currentGoal.length == 1 && typeof(this.currentGoal[0]) === "boolean")
+            return "";
+
         _.forEach(this.currentGoal, function(goal) {
             var subgoal = String(goal);
             if(max_len < subgoal.length)
                 max_len = subgoal.length;
-            subgoals_string += i + ". " + subgoal + "\n";
+            subgoals_string += num(i + ". ") + subgoal + "\n";
             i++;
         });
 
-        var out_string = "\n" + _.repeat("-", max_len + 4) + "\n";
+        var out_string = "\n" + del(_.repeat("-", max_len + 4)) + "\n";
         out_string += subgoals_string;
-        out_string += _.repeat("-", max_len + 4) + "\n";
+        out_string += del(_.repeat("-", max_len + 4)) + "\n";
 
         return out_string;
     }

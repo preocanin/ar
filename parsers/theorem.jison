@@ -53,7 +53,9 @@ theorem     : assumptions '|-' formula end
                   return thm;
               }
             | end 
-              { return undefined; }
+              { 
+                  return undefined; 
+              }
             ;
 
 assumptions : formula

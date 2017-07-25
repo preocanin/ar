@@ -3,7 +3,6 @@
 import * as _ from "lodash";
 import { IFormula, And, Or, Iff, Imp, Constant, Not, Atom, Type } from './formula';
 
-
 export class Theorem {
     /* --- Theorem ---
      * Each theorem is represented with list of assumptions(left side) and a 

@@ -10,6 +10,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "cli-color": "^1.2.0",
     "jison": "^0.4.17",
     "lodash": "^4.17.4",
     "readline-sync": "^1.4.7"
