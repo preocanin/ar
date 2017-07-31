@@ -12,10 +12,9 @@ The project represents a simple command line proof assistant for natural deducti
 #### Building
 1. Download a repo to your machine and navigate with command line to it.
 2. Execute `npm install` to install dependencies.
-3. Execute `npm start` to start the application.
+3. Execute `npm restart` to recompile and start application
 
 Licence
 ---
-
 
 MIT
