@@ -5,9 +5,10 @@ import * as readlineSync from 'readline-sync';
 import * as _ from "lodash";
 import * as fs from 'fs';
 import { Proof } from './models/proof';
-// import { Theorem } from './models/theorem';
 
 const jison = require('jison');
+
+// Terminal colors
 const clc = require('cli-color');
 
 const error = clc.xterm(255).bgXterm(160);
@@ -29,32 +30,31 @@ var proof = undefined;
 mainloop();
 
 function mainloop() {
-
-rl.question('What\'s your theorem, girl?', (answer) => {
-    proof = undefined;
-    if(answer == "quit")
-        rl.close();
-    else if(answer == "help") {
-        console.log("Neki help");
-        mainloop();
-    }
-    else {
-        if(proof === undefined) {
-            var thm = theorem_parser.parse(answer);
-            if(thm === true)
-                thm = undefined;
-            if(thm !== undefined)
-                proof = new Proof(thm);
-        }
-
-        rl.pause();
-        if(proof !== undefined) {
-            console.log(String(proof));
-            commandloop(proof);
-        } else 
+    rl.question('What\'s your theorem, girl?', (answer) => {
+        proof = undefined;
+        if(answer == "quit")
+            rl.close();
+        else if(answer == "help") {
+            console.log("Neki help");
             mainloop();
-    }
-  });
+        }
+        else {
+            if(proof === undefined) {
+                var thm = theorem_parser.parse(answer);
+                if(thm === true)
+                    thm = undefined;
+                if(thm !== undefined)
+                    proof = new Proof(thm);
+            }
+
+            rl.pause();
+            if(proof !== undefined) {
+                console.log(String(proof));
+                commandloop(proof);
+            } else 
+                mainloop();
+        }
+    });
 }
 
 function commandloop(proof: Proof, prevCommand = "nothing") {
@@ -74,6 +74,7 @@ function commandloop(proof: Proof, prevCommand = "nothing") {
         case "conjI":
         case "disjI1":
         case "disjI2":
+        case "iffI":
         case "ccontr":
         case "classical":
             eval("proof[command.type]()");

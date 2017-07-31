@@ -162,7 +162,7 @@ export class Imp extends BinaryConnective {
 }
 
 export class Iff extends BinaryConnective {
-    constructor(op1: IFormula, op2: IFormula) {
+    constructor(public op1: IFormula, public op2: IFormula) {
         super(Type.Iff, op1, op2);
     }
 

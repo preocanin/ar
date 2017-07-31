@@ -21,6 +21,7 @@
 "disjI1"                return 'DISJI1';
 "disjI2"                return 'DISJI2';
 "disjE"                 return 'DISJE';
+"iffI"                  return 'IFFI';
 "ccontr"                return 'CCONTR';
 "classical"             return 'CLASSICAL';
 \n                      return 'NL';
@@ -97,6 +98,8 @@ rule        : IMPI
             | DISJI1
               { $$ = yytext; }
             | DISJI2
+              { $$ = yytext; }
+            | IFFI
               { $$ = yytext; }
             | CCONTR
               { $$ = yytext; }

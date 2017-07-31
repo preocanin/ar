@@ -26,15 +26,19 @@ export class Proof {
     // Drop top subgoal and add new subgoal/s instead 
     private _dropAndAdd = (subs: Theorem[]) => {
         this._states.push(_.drop(this.currentGoal));
-        for(var i in subs)
-            this.currentGoal.push(subs[i]);
+        this.currentGoal = _.concat(subs, this.currentGoal);
+        //for(var i in subs)
+        //   this.currentGoal.push(subs[i]);
     }
-
 
     get states() { return this._states; }
 
     // Return current list of goals
     get currentGoal() { return _.last(this._states); }
+
+    set currentGoal(goal) { 
+        this._states[this._states.length - 1] = goal;
+    }
 
     // Return first subgoal(theorem) from current goal list
     get currentSubgoal() { return _.head(this.currentGoal); }
@@ -47,13 +51,13 @@ export class Proof {
 
     assumption() {
         var current_goal = this.currentSubgoal;
-        if(current_goal.lemma.getType() == "constant" && (<Constant>current_goal.lemma).val) {
-            this._dropAndAdd([]);
-            return true;
-        } else if(current_goal.isAssumption(current_goal.lemma)) {
+        if((current_goal.lemma.getType() == "constant" && (<Constant>current_goal.lemma).val)
+            || current_goal.isAssumption(current_goal.lemma)) {
+
             this._dropAndAdd([]);
             return true;
         }
+
         return false;
     }
 
@@ -98,7 +102,6 @@ export class Proof {
             goal.lemma = op2;
             goal.addAssumption(op1);
 
-            // New state = Old state - { Head(Old state) };
             this._dropAndAdd([goal]);
 
             return true;
@@ -130,6 +133,24 @@ export class Proof {
             goal.lemma = op2;
 
             this._dropAndAdd([goal]);
+
+            return true;
+        }
+        return false;
+    }
+
+    iffI() {
+        if(this.currentSubgoal.lemma.getType() === Type.Iff) {
+            var goal_1 = this.currentSubgoal.clone();
+            var goal_2 = this.currentSubgoal.clone();
+
+            goal_1.lemma = new Imp((<Iff>goal_1.lemma).op1,
+                                   (<Iff>goal_1.lemma).op2);
+
+            goal_2.lemma = new Imp((<Iff>goal_2.lemma).op2,
+                                   (<Iff>goal_2.lemma).op1);
+
+            this._dropAndAdd([goal_1,goal_2]);
 
             return true;
         }
