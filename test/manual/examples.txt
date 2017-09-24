@@ -6,7 +6,6 @@ erule conjE
 assumption
 erule conjE
 assumption
-done
 
 A | B => B | A
 rule impI
@@ -15,7 +14,6 @@ rule disjI2
 assumption
 rule disjI1
 assumption
-done
 
 A | (B | C) => (A | B) | C
 rule impI
@@ -29,7 +27,6 @@ rule disjI2
 assumption
 rule disjI2
 assumption
-done
 
 A & (B & C) => (A & B) & C
 rule impI
@@ -43,7 +40,6 @@ assumption
 erule conjE
 erule conjE
 assumption
-done
 
 A & (B | C) => (A & B) | (A & C)
 rule impI
@@ -57,7 +53,6 @@ rule disjI2
 rule conjI
 assumption
 assumption
-done
 
 ((A & B) | (A & C)) => (A & (B | C))
 rule impI
@@ -74,7 +69,6 @@ assumption
 rule disjI2
 erule conjE
 assumption
-done
 
 A | (B & C) => (A | B) & (A | C)
 rule impI
@@ -91,7 +85,6 @@ assumption
 rule disjI2
 erule conjE
 assumption
-done
 
 ((A | B) & (A | C)) => (A | (B & C))
 rule impI
@@ -106,7 +99,6 @@ rule disjI2
 rule conjI
 assumption
 assumption
-done
 
 (~A & (A | B)) => B
 rule impI
@@ -115,13 +107,11 @@ erule disjE
 erule notE
 assumption
 assumption
-done
 
 A => (B => A)
 rule impI
 rule impI
 assumption
-done
 
 (A => B) => (~B => ~A)
 rule impI
@@ -130,11 +120,9 @@ rule notI
 erule notE
 erule mp
 assumption
-done
 
 (~B => ~A) => (A => B)
 done
-
 
 ((A => B) & (B => C)) => (A => C)
 rule impI
@@ -144,21 +132,18 @@ erule impE
 assumption
 erule mp
 assumption
-done
 
 A => ~~A
 rule impI
 rule notI
 erule notE
 assumption
-done
 
 ~~A => A
 rule impI
 rule ccontr
 erule notE
 assumption
-done
 
 ~(A | B) => (~A & ~B)
 rule impI
@@ -171,7 +156,6 @@ rule notI
 erule notE
 rule disjI2
 assumption
-done
 
 (~A & ~B) => ~(A | B)
 done
@@ -190,8 +174,6 @@ erule notE
 rule disjI2
 assumption
 
-done
-
 (~A | ~B) => ~(A & B)
 rule impI
 rule notI
@@ -202,9 +184,6 @@ assumption
 erule conjE
 erule notE
 assumption
-done
-
-
 
 (A => (B => C)) => ((A & B) => C)
 rule impI
@@ -215,12 +194,9 @@ assumption
 erule conjE
 erule mp
 assumption
-done
 
 ((A => C) & (B => C) & (A | B)) => C
-
 done
-
 
 ((A => B) & (A => C)) => (A => (B & C))
 rule impI
@@ -232,14 +208,9 @@ assumption
 erule conjE
 erule mp
 assumption
-done
-
-
 
 A | ~ A
-
 done
-
 
 ((A | B) & (~A | ~B) => A) => (B => A)
 rule impI
@@ -253,7 +224,6 @@ rule disjI1
 assumption
 erule notE
 assumption
-done
 
 ((A => B) & (~A => B)) => B
 rule impI
@@ -267,11 +237,8 @@ erule notE
 assumption
 erule notE
 assumption
-done
-
 
 (~B => ~A) => ((B | A) => B)
-
 done
 
 (~B => (A => B)) & (~B => (A | B)) => B
@@ -289,7 +256,6 @@ erule notE
 assumption
 erule notE
 assumption
-done
 
 ~((p => q) & (~r | s)) => ((p & ~q) | (r & ~s))
 rule impI
@@ -315,6 +281,5 @@ rule notI
 erule notE
 rule disjI2
 assumption
-done
 
 quit

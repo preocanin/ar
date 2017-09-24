@@ -213,7 +213,7 @@ export class Proof {
                 var goal = this.currentSubgoal.clone();
 
                 goal.removeAssumption(mp_imp);
-                goal.lemma = (<Imp>mp_imp).op2;
+                goal.lemma = (<Imp>mp_imp).op1;
 
                 this._dropAndAdd([goal]);
 
