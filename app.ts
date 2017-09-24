@@ -25,7 +25,7 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-var proof = undefined;
+var proof;
 
 mainloop();
 
@@ -39,16 +39,12 @@ function mainloop() {
             mainloop();
         }
         else {
-            if(proof === undefined) {
-                var thm = theorem_parser.parse(answer);
-                if(thm === true)
-                    thm = undefined;
-                if(thm !== undefined)
-                    proof = new Proof(thm);
-            }
+            const thm = theorem_parser.parse(answer);
+            if(typeof thm === "object") // if Thereom object is returned
+                proof = new Proof(thm);
 
             rl.pause();
-            if(proof !== undefined) {
+            if(proof) {
                 console.log(String(proof));
                 commandloop(proof);
             } else 
@@ -64,8 +60,16 @@ function commandloop(proof: Proof, prevCommand = "nothing") {
         console.log(String(proof));
 
     rl.question("enter command> ", function (command_string) {
-
-    var command = command_parser.parse(command_string);
+    
+    
+    var command;
+    try{
+        command = command_parser.parse(command_string);
+    } catch(e) {
+        console.log(error(`Command "${command_string}" is not valid in a current context!`));
+        commandloop(proof, "invalid");
+        return;
+    }
     rl.pause();
 
     switch(command.type) {
