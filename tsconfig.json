@@ -1,0 +1,19 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "target": "es5",
+        "watch": false 
+    },
+    "include": [
+        "models/*",
+        "test/*",
+        "app.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

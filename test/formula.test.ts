@@ -1,15 +1,7 @@
 'use strinct';
 
-const theorem = require('../models/theorem');
-const formula = require('../models/formula');
-
-const Atom = formula.Atom;
-const Not = formula.Not;
-const And = formula.And;
-const Or = formula.Or;
-const Imp = formula.Imp;
-const Iff = formula.Iff;
-const Constant= formula.Constant;
+import { Theorem } from '../models/theorem';
+import { Atom, Not, And, Or, Imp, Iff, Constant} from '../models/formula';
 
 describe("Formula", () => {
 
@@ -32,8 +24,8 @@ describe("Formula", () => {
       });
 
       it("Should return false if the type of formulas is not the same", () => {
-        expect(p.equalTo(anotherFormula)).toBe(false);
-        expect(q.equalTo(anotherFormula)).toBe(false);
+        expect(p.equalTo(<any>anotherFormula)).toBe(false);
+        expect(q.equalTo(<any>anotherFormula)).toBe(false);
       });
 
       it("Should return false if the literal of formulas is not the same", () => {
@@ -93,7 +85,7 @@ describe("Formula", () => {
       const notQ = notP.clone();
 
       it("Should make a new formula which is equalTo cloned formula but points to a different memory location", () => {
-        expect(notP.equalTo(notQ)).toBe(true);
+        expect(notP.equalTo(<any>notQ)).toBe(true);
         expect(notP === notQ).toBe(false);
       })
     });
@@ -121,8 +113,8 @@ describe("Formula", () => {
       });
 
       it("Should return false if the type of formulas is not the same", () => {
-        expect(T.equalTo(p)).toBe(false);
-        expect(N.equalTo(p)).toBe(false);
+        expect(T.equalTo(<any>p)).toBe(false);
+        expect(N.equalTo(<any>p)).toBe(false);
       });
 
       it("Should return false if the value of constants is not the same", () => {
