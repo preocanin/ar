@@ -1,0 +1,320 @@
+
+A & B => B & A
+rule impI
+rule conjI
+erule conjE
+assumption
+erule conjE
+assumption
+done
+
+A | B => B | A
+rule impI
+erule disjE
+rule disjI2
+assumption
+rule disjI1
+assumption
+done
+
+A | (B | C) => (A | B) | C
+rule impI
+erule disjE
+rule disjI1
+rule disjI1
+assumption
+erule disjE
+rule disjI1
+rule disjI2
+assumption
+rule disjI2
+assumption
+done
+
+A & (B & C) => (A & B) & C
+rule impI
+rule conjI
+rule conjI
+erule conjE
+assumption
+erule conjE
+erule conjE
+assumption
+erule conjE
+erule conjE
+assumption
+done
+
+A & (B | C) => (A & B) | (A & C)
+rule impI
+erule conjE
+erule disjE
+rule disjI1
+rule conjI
+assumption
+assumption
+rule disjI2
+rule conjI
+assumption
+assumption
+done
+
+((A & B) | (A & C)) => (A & (B | C))
+rule impI
+erule disjE
+rule conjI
+erule conjE
+assumption
+rule disjI1
+erule conjE
+assumption
+rule conjI
+erule conjE
+assumption
+rule disjI2
+erule conjE
+assumption
+done
+
+A | (B & C) => (A | B) & (A | C)
+rule impI
+rule conjI
+erule disjE
+rule disjI1
+assumption
+rule disjI2
+erule conjE
+assumption
+erule disjE
+rule disjI1
+assumption
+rule disjI2
+erule conjE
+assumption
+done
+
+((A | B) & (A | C)) => (A | (B & C))
+rule impI
+erule conjE
+erule disjE
+rule disjI1
+assumption
+erule disjE
+rule disjI1
+assumption
+rule disjI2
+rule conjI
+assumption
+assumption
+done
+
+(~A & (A | B)) => B
+rule impI
+erule conjE
+erule disjE
+erule notE
+assumption
+assumption
+done
+
+A => (B => A)
+rule impI
+rule impI
+assumption
+done
+
+(A => B) => (~B => ~A)
+rule impI
+rule impI
+rule notI
+erule notE
+erule mp
+assumption
+done
+
+(~B => ~A) => (A => B)
+done
+
+
+((A => B) & (B => C)) => (A => C)
+rule impI
+rule impI
+erule conjE
+erule impE
+assumption
+erule mp
+assumption
+done
+
+A => ~~A
+rule impI
+rule notI
+erule notE
+assumption
+done
+
+~~A => A
+rule impI
+rule ccontr
+erule notE
+assumption
+done
+
+~(A | B) => (~A & ~B)
+rule impI
+rule conjI
+rule notI
+erule notE
+rule disjI1
+assumption
+rule notI
+erule notE
+rule disjI2
+assumption
+done
+
+(~A & ~B) => ~(A | B)
+done
+
+~(A & B) => (~A | ~B)
+rule impI
+rule ccontr
+erule notE
+rule conjI
+rule ccontr
+erule notE
+rule disjI1
+assumption
+rule ccontr
+erule notE
+rule disjI2
+assumption
+
+done
+
+(~A | ~B) => ~(A & B)
+rule impI
+rule notI
+erule disjE
+erule conjE
+erule notE
+assumption
+erule conjE
+erule notE
+assumption
+done
+
+
+
+(A => (B => C)) => ((A & B) => C)
+rule impI
+rule impI
+erule impE
+erule conjE
+assumption
+erule conjE
+erule mp
+assumption
+done
+
+((A => C) & (B => C) & (A | B)) => C
+
+done
+
+
+((A => B) & (A => C)) => (A => (B & C))
+rule impI
+rule impI
+rule conjI
+erule conjE
+erule mp
+assumption
+erule conjE
+erule mp
+assumption
+done
+
+
+
+A | ~ A
+
+done
+
+
+((A | B) & (~A | ~B) => A) => (B => A)
+rule impI
+rule impI
+rule ccontr
+erule impE
+rule conjI
+rule disjI2
+assumption
+rule disjI1
+assumption
+erule notE
+assumption
+done
+
+((A => B) & (~A => B)) => B
+rule impI
+erule conjE
+rule ccontr
+erule impE
+rule ccontr
+erule impE
+assumption
+erule notE
+assumption
+erule notE
+assumption
+done
+
+
+(~B => ~A) => ((B | A) => B)
+
+done
+
+(~B => (A => B)) & (~B => (A | B)) => B
+rule impI
+erule conjE
+rule ccontr
+erule impE
+assumption
+erule impE
+assumption
+erule disjE
+erule impE
+assumption
+erule notE
+assumption
+erule notE
+assumption
+done
+
+~((p => q) & (~r | s)) => ((p & ~q) | (r & ~s))
+rule impI
+rule ccontr
+erule notE
+rule conjI
+rule impI
+rule ccontr
+erule notE
+rule disjI1
+rule conjI
+assumption
+assumption
+rule ccontr
+erule notE
+rule disjI2
+rule conjI
+rule ccontr
+erule notE
+rule disjI1
+assumption
+rule notI
+erule notE
+rule disjI2
+assumption
+done
+
+quit
