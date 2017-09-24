@@ -22,6 +22,7 @@
 "disjI2"                return 'DISJI2';
 "disjE"                 return 'DISJE';
 "iffI"                  return 'IFFI';
+"iffE"                  return 'IFFE';
 "ccontr"                return 'CCONTR';
 "classical"             return 'CLASSICAL';
 \n                      return 'NL';
@@ -116,6 +117,8 @@ erule       : IMPE
             | CONJE
               { $$ = yytext; }
             | DISJE
+              { $$ = yytext; }
+            | IFFE
               { $$ = yytext; }
             ;
 

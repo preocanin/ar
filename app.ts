@@ -87,6 +87,7 @@ function commandloop(proof: Proof, prevCommand = "nothing") {
         case "notE":
         case "conjE":
         case "disjE":
+        case "iffE":
         case "mp":
             eval("proof[command.type](command.argument)");
             break;

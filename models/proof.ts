@@ -7,8 +7,7 @@ import { Theorem } from './theorem';
 const clc = require('cli-color');
 
 const del = clc.xterm(38);
-const num = clc.xterm(44);
-
+const num = clc.xterm(44); 
 export class Proof {
     /* --- Proof ---
      * Each proof consists of states. When we apply some deduction rule we
@@ -269,6 +268,23 @@ export class Proof {
 
             this._dropAndAdd([goal_1,goal_2]);
 
+            return true;
+        }
+        return false;
+    }
+
+    iffE(num = 1) {
+        var assumption = this.currentSubgoal.getAssumption(Type.Iff, num);
+        if(assumption) {
+            var goal = this.currentSubgoal.clone();
+            var op1 = (<Iff>assumption).op1;
+            var op2 = (<Iff>assumption).op2;
+
+            goal.removeAssumption(assumption);
+            goal.addAssumption(new Imp(op1,op2));
+            goal.addAssumption(new Imp(op2,op1));
+
+            this._dropAndAdd([goal]);
             return true;
         }
         return false;
