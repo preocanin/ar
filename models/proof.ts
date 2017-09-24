@@ -53,11 +53,9 @@ export class Proof {
         var current_goal = this.currentSubgoal;
         if((current_goal.lemma.getType() == "constant" && (<Constant>current_goal.lemma).val)
             || current_goal.isAssumption(current_goal.lemma)) {
-
             this._dropAndAdd([]);
             return true;
         }
-
         return false;
     }
 

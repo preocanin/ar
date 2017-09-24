@@ -60,7 +60,7 @@ export class Theorem {
 
     isAssumption(assumption: IFormula) {
        return _.find(this._assumption_list, function(_assump) {
-            return _assump.equalTo(assumption) !== undefined;
+            return _assump.equalTo(assumption);
        });
     }
 
