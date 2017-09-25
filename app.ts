@@ -13,6 +13,7 @@ const clc = require('cli-color');
 
 const error = clc.xterm(255).bgXterm(160);
 const success = clc.xterm(155);
+const fail = clc.xterm(255);
 
 var t_bnf = fs.readFileSync('./parsers/theorem.jison', 'utf8');
 const theorem_parser = new jison.Parser(t_bnf);
@@ -30,7 +31,7 @@ var proof;
 mainloop();
 
 function mainloop() {
-    rl.question('What\'s your theorem, girl?', (answer) => {
+    rl.question('insert theorem> ', (answer) => {
         proof = undefined;
         if(answer == "quit")
             rl.close();
@@ -54,9 +55,11 @@ function mainloop() {
 }
 
 function commandloop(proof: Proof, prevCommand = "nothing") {
-    var commands = ["print", "invalid", "nothing", "help"];
-    if( !_.includes(commands, prevCommand) && 
-        proof !== undefined)
+    const commands = ["print", "invalid", "nothing", "help"];
+    const rules = ["impI", "notI", "conjI", "disjI1", "disjI2", "iffI", "ccontr", "classical"];
+    const erules = ["impE", "notE", "conjE", "disjE", "iffE", "mp"];
+
+    if(!_.includes(commands, prevCommand) && proof)
         console.log(String(proof));
 
     rl.question("enter command> ", function (command_string) {
@@ -72,43 +75,23 @@ function commandloop(proof: Proof, prevCommand = "nothing") {
     }
     rl.pause();
 
-    switch(command.type) {
-        case "impI":
-        case "notI":
-        case "conjI":
-        case "disjI1":
-        case "disjI2":
-        case "iffI":
-        case "ccontr":
-        case "classical":
-            eval("proof[command.type]()");
-            break;
-        case "impE":
-        case "notE":
-        case "conjE":
-        case "disjE":
-        case "iffE":
-        case "mp":
-            eval("proof[command.type](command.argument)");
-            break;
-        case "assumption":
-            proof.assumption();
-            break;
-        case "back":
-            proof.back(command.argument);
-            break;
-        case "print":
-            console.log(String(proof));
-            break;
-        case "quit":
-            return;
-        case "invalid":
-            console.log(error("Unknown command"));
-            break;
-        case "help":
-            console.log("Neki help");
-            break;
-    }
+    if(_.includes(rules, command.type))
+        eval("proof[command.type]()");
+    else if(_.includes(erules, command.type))
+        eval("proof[command.type](command.argument)");
+    else if(command.type == "assumption")
+        proof.assumption();
+    else if(command.type == "back")
+        proof.back(command.argument)
+    else if(command.type == "print")
+        console.log(String(proof));
+    else if(command.type == "quit")
+        return;
+    else if(command.type == "invalid")
+        console.log(error("Unknown command"));
+    else if(command.type == "help")
+        console.log("Neki help");
+
     if(_.isEmpty(proof.currentGoal)) {
         command.type = "done";
         console.log("\n" + success("Theorem proved!") + "\n");

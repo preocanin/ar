@@ -168,7 +168,7 @@ export class Proof {
     }
 
     classical() {
-        if(this.currentSubgoal.lemma !== undefined) {
+        if(this.currentSubgoal.lemma) {
             var goal = this.currentSubgoal.clone();
             var new_assumption = new Not(goal.lemma);
 
@@ -187,7 +187,7 @@ export class Proof {
     // 2. [op2, assump1, assump2, ...] |- lemma
     impE(num = 1) {
         var assumption = this.currentSubgoal.getAssumption(Type.Imp, num);
-        if(assumption !== undefined) {
+        if(assumption) {
             // We must clone theorem because of object sharing
             var goal_1 = this.currentSubgoal.clone();
             var goal_2 = this.currentSubgoal.clone();
@@ -225,7 +225,7 @@ export class Proof {
 
     notE(num = 1) {
         var assumption = this.currentSubgoal.getAssumption(Type.Not, num);
-        if(assumption !== undefined) {
+        if(assumption) {
             var goal = this.currentSubgoal.clone();
 
             goal.removeAssumption(assumption);
@@ -240,7 +240,7 @@ export class Proof {
 
     conjE(num = 1) {
         var assumption = this.currentSubgoal.getAssumption(Type.And, num);
-        if(assumption !== undefined) {
+        if(assumption) {
             var goal = this.currentSubgoal.clone();
 
             goal.removeAssumption(assumption);
@@ -256,7 +256,7 @@ export class Proof {
 
     disjE(num = 1) {
         var assumption = this.currentSubgoal.getAssumption(Type.Or, num);
-        if(assumption !== undefined) {
+        if(assumption) {
             var goal_1 = this.currentSubgoal.clone();
             var goal_2 = this.currentSubgoal.clone();
 
