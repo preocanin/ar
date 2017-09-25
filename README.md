@@ -12,8 +12,8 @@ The project represents a simple command line proof assistant for natural deducti
 #### Building
 1. Download a repo to your machine and navigate with command line to it.
 2. Execute `npm install` to install dependencies.
-3.1. Exectue `npm restart` to recompile and start application.
-3.2. Execute `node app.js` or `npm start` to start application.
+3. Exectue `npm restart` to recompile and start application or 
+   `npm start` to start application without recompilation.
 
 Licence
 ---
