@@ -8,11 +8,19 @@ const clc = require('cli-color');
 
 const del = clc.xterm(38);
 const num = clc.xterm(44); 
+const error = clc.xterm(1);
+
 export class Proof {
     /* --- Proof ---
      * Each proof consists of states. When we apply some deduction rule we
      * change the state of our proof. In order to be able to go back to
      * previous state we must hold all of them.
+     */
+
+    /* --- State ---
+     * Is a list of theorems (i.e. subgoals)
+     * When one of the theorems are proven we delete 
+     * create new state that contains all theorems accept that one.
      */
     private _states: Theorem[][];
     constructor(thm: Theorem) {
@@ -24,17 +32,18 @@ export class Proof {
 
     // Drop top subgoal and add new subgoal/s instead 
     private _dropAndAdd = (subs: Theorem[]) => {
+        // From top state we drop first theorem in list 
         this._states.push(_.drop(this.currentGoal));
+        // and add new theorems
         this.currentGoal = _.concat(subs, this.currentGoal);
-        //for(var i in subs)
-        //   this.currentGoal.push(subs[i]);
     }
 
     get states() { return this._states; }
 
-    // Return current list of goals
+    // Return current top state 
     get currentGoal() { return _.last(this._states); }
 
+    // Change top state
     set currentGoal(goal) { 
         this._states[this._states.length - 1] = goal;
     }
@@ -53,9 +62,7 @@ export class Proof {
         if((current_goal.lemma.getType() == "constant" && (<Constant>current_goal.lemma).val)
             || current_goal.isAssumption(current_goal.lemma)) {
             this._dropAndAdd([]);
-            return true;
         }
-        return false;
     }
 
     notI() {
@@ -69,9 +76,9 @@ export class Proof {
             
             this._dropAndAdd([goal]);
             
-            return true;
         }
-        return false;
+        else
+            console.log(error("Cannot apply rule notI because top operator is not Not"));
     }
 
     conjI() {
@@ -83,10 +90,9 @@ export class Proof {
             goal_2.lemma = (<And>this.currentSubgoal.lemma).op2;
 
             this._dropAndAdd([goal_1,goal_2]);
-
-            return true;
         }
-        return false;
+        else
+            console.log(error("Cannot apply rule conjI because top operator is not Conj"));
     }
 
     impI() {
@@ -100,10 +106,9 @@ export class Proof {
             goal.addAssumption(op1);
 
             this._dropAndAdd([goal]);
-
-            return true;
         }
-        return false;
+        else 
+            console.log(error("Cannot apply rule impI because top operator is not Imp"));
     }
 
     disjI1() {
@@ -115,10 +120,9 @@ export class Proof {
             goal.lemma = op1;
 
             this._dropAndAdd([goal]);
-
-            return true;
         }
-        return false;
+        else 
+            console.log(error("Cannot apply rule disjI1 because top operator is not Disj"));
     }
 
     disjI2() {
@@ -130,10 +134,9 @@ export class Proof {
             goal.lemma = op2;
 
             this._dropAndAdd([goal]);
-
-            return true;
         }
-        return false;
+        else
+            console.log(error("Cannot apply rule disjI2 because top operator is not Disj"));
     }
 
     iffI() {
@@ -148,10 +151,9 @@ export class Proof {
                                    (<Iff>goal_2.lemma).op1);
 
             this._dropAndAdd([goal_1,goal_2]);
-
-            return true;
         }
-        return false;
+        else
+            console.log(error("Cannot apply rule iffI because top operator is not Iff"));
     }
 
     ccontr() {
@@ -163,22 +165,17 @@ export class Proof {
         goal.addAssumption(new_assumption);
 
         this._dropAndAdd([goal]);
-
-        return true;
     }
 
     classical() {
-        if(this.currentSubgoal.lemma !== undefined) {
+        if(this.currentSubgoal.lemma) {
             var goal = this.currentSubgoal.clone();
             var new_assumption = new Not(goal.lemma);
 
             goal.addAssumption(new_assumption);
 
             this._dropAndAdd([goal]);
-
-            return true;
         } 
-        return false;
     }
 
     // [ op1 => op2, assump1, assump2, ... ] |- lemma
@@ -187,7 +184,7 @@ export class Proof {
     // 2. [op2, assump1, assump2, ...] |- lemma
     impE(num = 1) {
         var assumption = this.currentSubgoal.getAssumption(Type.Imp, num);
-        if(assumption !== undefined) {
+        if(assumption) {
             // We must clone theorem because of object sharing
             var goal_1 = this.currentSubgoal.clone();
             var goal_2 = this.currentSubgoal.clone();
@@ -199,10 +196,10 @@ export class Proof {
             goal_2.addAssumption((<Imp>assumption).op2);
 
             this._dropAndAdd([goal_1,goal_2]);
-             
-            return true;
         }
-        return false;
+        else 
+            console.log(error("Cannot apply erule impE because there is no assumption with"
+                              + " Imp operator"));
     }
 
     mp(num = 1) {
@@ -217,30 +214,31 @@ export class Proof {
 
                 this._dropAndAdd([goal]);
 
-                return true;
             } 
         }
-        return false;
+        else
+            console.log(error("Cannot apply erule mp because there is no assumption with"
+                              + " Imp operator"));
     }
 
     notE(num = 1) {
         var assumption = this.currentSubgoal.getAssumption(Type.Not, num);
-        if(assumption !== undefined) {
+        if(assumption) {
             var goal = this.currentSubgoal.clone();
 
             goal.removeAssumption(assumption);
             goal.lemma = (<Not>assumption).op;
 
             this._dropAndAdd([goal]);
-
-            return true;
         }
-        return false;
+        else
+            console.log(error("Cannot apply erule notE because there is no assumption with"
+                              + " Not operator"));
     }
 
     conjE(num = 1) {
         var assumption = this.currentSubgoal.getAssumption(Type.And, num);
-        if(assumption !== undefined) {
+        if(assumption) {
             var goal = this.currentSubgoal.clone();
 
             goal.removeAssumption(assumption);
@@ -248,15 +246,15 @@ export class Proof {
             goal.addAssumption((<And>assumption).op2);
 
             this._dropAndAdd([goal]);
-
-            return true;
         }
-        return false;
+        else
+            console.log(error("Cannot apply erule conjE because there is no assumption with"
+                              + " Conj operator"));
     }
 
     disjE(num = 1) {
         var assumption = this.currentSubgoal.getAssumption(Type.Or, num);
-        if(assumption !== undefined) {
+        if(assumption) {
             var goal_1 = this.currentSubgoal.clone();
             var goal_2 = this.currentSubgoal.clone();
 
@@ -267,10 +265,10 @@ export class Proof {
             goal_2.addAssumption((<Or>assumption).op2);
 
             this._dropAndAdd([goal_1,goal_2]);
-
-            return true;
         }
-        return false;
+        else
+            console.log(error("Cannot apply erule conjE because there is no assumption with"
+                              + " Disj operator"));
     }
 
     iffE(num = 1) {
@@ -285,9 +283,10 @@ export class Proof {
             goal.addAssumption(new Imp(op2,op1));
 
             this._dropAndAdd([goal]);
-            return true;
         }
-        return false;
+        else
+            console.log(error("Cannot apply erule conjE because there is no assumption with"
+                              + " Iff operator"));
     }
 
     toString() {

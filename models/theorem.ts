@@ -35,7 +35,7 @@ export class Theorem {
 
     set assumptions(assumptions: IFormula[]) {
         this._assumption_list = [];
-        if(assumptions !== undefined)
+        if(assumptions)
             for(let i = 0; i < assumptions.length ; i++) {
                 const assumption_clone = assumptions[i].clone();
                 this._assumption_dict[assumptions[i].getType()].push(assumption_clone);
@@ -52,7 +52,7 @@ export class Theorem {
     }
 
     addAssumption(assumption: IFormula) {
-        if(assumption !== undefined) {
+        if(assumption) {
             this._assumption_list.push(assumption);
             this._assumption_dict[assumption.getType()].push(assumption);
         }
@@ -65,7 +65,7 @@ export class Theorem {
     }
 
     removeAssumption(assumption: IFormula) {
-        if(assumption !== undefined) {
+        if(assumption) {
            this._assumption_list = 
                 _.remove(this._assumption_list, function(f) {
                     return assumption.notEqualTo(f); 
@@ -93,10 +93,10 @@ export class Theorem {
     }
 
     toString() : string {
-        if(this.lemma !== undefined) {
-            if(this._assumption_list !== undefined && this._assumption_list.length > 0)
+        if(this.lemma) {
+            if(this._assumption_list && this._assumption_list.length > 0)
                 return "[ " + this._assumption_list.join(", ") + " ] |- " + String(this.lemma); 
-            if(this.lemma !== undefined)
+            if(this.lemma)
                 return "|- " + String(this.lemma);
             }
         return "";

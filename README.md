@@ -7,12 +7,13 @@ The project represents a simple command line proof assistant for natural deducti
 
 #### Prerequisites
 1. Install Node.js (version >= 6.5).
-2. Install TypeScript with `npm install -g typescript`
+2. Install TypeScript with `npm install -g typescript`.
 
 #### Building
 1. Download a repo to your machine and navigate with command line to it.
 2. Execute `npm install` to install dependencies.
-3. Execute `npm restart` to recompile and start application
+3. Exectue `npm restart` to recompile and start application or 
+   `npm start` to start application without recompilation.
 
 Licence
 ---
