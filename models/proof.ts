@@ -8,6 +8,8 @@ const clc = require('cli-color');
 
 const del = clc.xterm(38);
 const num = clc.xterm(44); 
+const error = clc.xterm(1);
+
 export class Proof {
     /* --- Proof ---
      * Each proof consists of states. When we apply some deduction rule we
@@ -75,7 +77,8 @@ export class Proof {
             this._dropAndAdd([goal]);
             
         }
-
+        else
+            console.log(error("Cannot apply rule notI because top operator is not Not"));
     }
 
     conjI() {
@@ -87,8 +90,9 @@ export class Proof {
             goal_2.lemma = (<And>this.currentSubgoal.lemma).op2;
 
             this._dropAndAdd([goal_1,goal_2]);
-
         }
+        else
+            console.log(error("Cannot apply rule conjI because top operator is not Conj"));
     }
 
     impI() {
@@ -102,8 +106,9 @@ export class Proof {
             goal.addAssumption(op1);
 
             this._dropAndAdd([goal]);
-
         }
+        else 
+            console.log(error("Cannot apply rule impI because top operator is not Imp"));
     }
 
     disjI1() {
@@ -116,6 +121,8 @@ export class Proof {
 
             this._dropAndAdd([goal]);
         }
+        else 
+            console.log(error("Cannot apply rule disjI1 because top operator is not Disj"));
     }
 
     disjI2() {
@@ -128,6 +135,8 @@ export class Proof {
 
             this._dropAndAdd([goal]);
         }
+        else
+            console.log(error("Cannot apply rule disjI2 because top operator is not Disj"));
     }
 
     iffI() {
@@ -143,8 +152,8 @@ export class Proof {
 
             this._dropAndAdd([goal_1,goal_2]);
         }
-
-
+        else
+            console.log(error("Cannot apply rule iffI because top operator is not Iff"));
     }
 
     ccontr() {
@@ -166,7 +175,6 @@ export class Proof {
             goal.addAssumption(new_assumption);
 
             this._dropAndAdd([goal]);
-
         } 
     }
 
@@ -188,8 +196,10 @@ export class Proof {
             goal_2.addAssumption((<Imp>assumption).op2);
 
             this._dropAndAdd([goal_1,goal_2]);
-             
         }
+        else 
+            console.log(error("Cannot apply erule impE because there is no assumption with"
+                              + " Imp operator"));
     }
 
     mp(num = 1) {
@@ -206,6 +216,9 @@ export class Proof {
 
             } 
         }
+        else
+            console.log(error("Cannot apply erule mp because there is no assumption with"
+                              + " Imp operator"));
     }
 
     notE(num = 1) {
@@ -217,8 +230,10 @@ export class Proof {
             goal.lemma = (<Not>assumption).op;
 
             this._dropAndAdd([goal]);
-
         }
+        else
+            console.log(error("Cannot apply erule notE because there is no assumption with"
+                              + " Not operator"));
     }
 
     conjE(num = 1) {
@@ -231,8 +246,10 @@ export class Proof {
             goal.addAssumption((<And>assumption).op2);
 
             this._dropAndAdd([goal]);
-
         }
+        else
+            console.log(error("Cannot apply erule conjE because there is no assumption with"
+                              + " Conj operator"));
     }
 
     disjE(num = 1) {
@@ -248,8 +265,10 @@ export class Proof {
             goal_2.addAssumption((<Or>assumption).op2);
 
             this._dropAndAdd([goal_1,goal_2]);
-
         }
+        else
+            console.log(error("Cannot apply erule conjE because there is no assumption with"
+                              + " Disj operator"));
     }
 
     iffE(num = 1) {
@@ -265,6 +284,9 @@ export class Proof {
 
             this._dropAndAdd([goal]);
         }
+        else
+            console.log(error("Cannot apply erule conjE because there is no assumption with"
+                              + " Iff operator"));
     }
 
     toString() {
