@@ -14,6 +14,12 @@ export class Proof {
      * change the state of our proof. In order to be able to go back to
      * previous state we must hold all of them.
      */
+
+    /* --- State ---
+     * Is a list of theorems (i.e. subgoals)
+     * When one of the theorems are proven we delete 
+     * create new state that contains all theorems accept that one.
+     */
     private _states: Theorem[][];
     constructor(thm: Theorem) {
         if(thm === undefined)
@@ -24,17 +30,18 @@ export class Proof {
 
     // Drop top subgoal and add new subgoal/s instead 
     private _dropAndAdd = (subs: Theorem[]) => {
+        // From top state we drop first theorem in list 
         this._states.push(_.drop(this.currentGoal));
+        // and add new theorems
         this.currentGoal = _.concat(subs, this.currentGoal);
-        //for(var i in subs)
-        //   this.currentGoal.push(subs[i]);
     }
 
     get states() { return this._states; }
 
-    // Return current list of goals
+    // Return current top state 
     get currentGoal() { return _.last(this._states); }
 
+    // Change top state
     set currentGoal(goal) { 
         this._states[this._states.length - 1] = goal;
     }
@@ -53,9 +60,7 @@ export class Proof {
         if((current_goal.lemma.getType() == "constant" && (<Constant>current_goal.lemma).val)
             || current_goal.isAssumption(current_goal.lemma)) {
             this._dropAndAdd([]);
-            return true;
         }
-        return false;
     }
 
     notI() {
@@ -69,9 +74,8 @@ export class Proof {
             
             this._dropAndAdd([goal]);
             
-            return true;
         }
-        return false;
+
     }
 
     conjI() {
@@ -84,9 +88,7 @@ export class Proof {
 
             this._dropAndAdd([goal_1,goal_2]);
 
-            return true;
         }
-        return false;
     }
 
     impI() {
@@ -101,9 +103,7 @@ export class Proof {
 
             this._dropAndAdd([goal]);
 
-            return true;
         }
-        return false;
     }
 
     disjI1() {
@@ -115,10 +115,7 @@ export class Proof {
             goal.lemma = op1;
 
             this._dropAndAdd([goal]);
-
-            return true;
         }
-        return false;
     }
 
     disjI2() {
@@ -130,10 +127,7 @@ export class Proof {
             goal.lemma = op2;
 
             this._dropAndAdd([goal]);
-
-            return true;
         }
-        return false;
     }
 
     iffI() {
@@ -148,10 +142,9 @@ export class Proof {
                                    (<Iff>goal_2.lemma).op1);
 
             this._dropAndAdd([goal_1,goal_2]);
-
-            return true;
         }
-        return false;
+
+
     }
 
     ccontr() {
@@ -163,8 +156,6 @@ export class Proof {
         goal.addAssumption(new_assumption);
 
         this._dropAndAdd([goal]);
-
-        return true;
     }
 
     classical() {
@@ -176,9 +167,7 @@ export class Proof {
 
             this._dropAndAdd([goal]);
 
-            return true;
         } 
-        return false;
     }
 
     // [ op1 => op2, assump1, assump2, ... ] |- lemma
@@ -200,9 +189,7 @@ export class Proof {
 
             this._dropAndAdd([goal_1,goal_2]);
              
-            return true;
         }
-        return false;
     }
 
     mp(num = 1) {
@@ -217,10 +204,8 @@ export class Proof {
 
                 this._dropAndAdd([goal]);
 
-                return true;
             } 
         }
-        return false;
     }
 
     notE(num = 1) {
@@ -233,9 +218,7 @@ export class Proof {
 
             this._dropAndAdd([goal]);
 
-            return true;
         }
-        return false;
     }
 
     conjE(num = 1) {
@@ -249,9 +232,7 @@ export class Proof {
 
             this._dropAndAdd([goal]);
 
-            return true;
         }
-        return false;
     }
 
     disjE(num = 1) {
@@ -268,9 +249,7 @@ export class Proof {
 
             this._dropAndAdd([goal_1,goal_2]);
 
-            return true;
         }
-        return false;
     }
 
     iffE(num = 1) {
@@ -285,9 +264,7 @@ export class Proof {
             goal.addAssumption(new Imp(op2,op1));
 
             this._dropAndAdd([goal]);
-            return true;
         }
-        return false;
     }
 
     toString() {

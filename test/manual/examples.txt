@@ -206,7 +206,7 @@ erule conjE
 erule mp
 assumption
 erule conjE
-erule mp
+erule mp 2
 assumption
 
 A | ~ A
